@@ -4,6 +4,11 @@ import { getUncachableStripeClient, getStripePublishableKey } from "../lib/strip
 const router = Router();
 
 const PLANS = {
+  early: {
+    price: 900,
+    name: "EdgeIQ Early Access",
+    description: "Full access to real-time signals, AI predictions, and instant alerts.",
+  },
   pro: {
     price: 1900,
     name: "EdgeIQ Pro",
@@ -30,11 +35,11 @@ router.post("/checkout/create-session", async (req, res) => {
     const stripe = await getUncachableStripeClient();
 
     const planParam = req.body?.plan;
-    if (planParam !== "pro" && planParam !== "elite") {
-      res.status(400).json({ error: 'Invalid plan. Must be "pro" or "elite".' });
+    if (planParam !== "early" && planParam !== "pro" && planParam !== "elite") {
+      res.status(400).json({ error: 'Invalid plan. Must be "early", "pro", or "elite".' });
       return;
     }
-    const plan: "pro" | "elite" = planParam;
+    const plan: "early" | "pro" | "elite" = planParam;
     const planConfig = PLANS[plan];
 
     const origin = req.headers.origin || req.headers.referer || "http://localhost";

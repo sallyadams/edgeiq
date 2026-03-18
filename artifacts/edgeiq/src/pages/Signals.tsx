@@ -6,9 +6,9 @@ import { SignalCard } from "@/components/SignalCard";
 
 type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
-const FREE_SIGNAL_LIMIT = 3;
+const FREE_SIGNAL_LIMIT = 2;
 
-async function startCheckout(plan: "pro" | "elite") {
+async function startCheckout(plan: "early" | "pro" | "elite") {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   const res = await fetch(`${base}/api/checkout/create-session`, {
     method: "POST",
@@ -116,48 +116,92 @@ function TierCard({ plan, label, price, features, highlighted }: {
 }
 
 function PremiumPaywall() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleUnlock() {
+    setLoading(true);
+    setError(null);
+    try {
+      await startCheckout("early");
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative z-10 mx-auto max-w-2xl -mt-2"
+      className="relative z-10 mx-auto max-w-lg -mt-2"
     >
-      <div className="relative rounded-3xl border border-border/50 bg-card/90 backdrop-blur-xl p-8 shadow-2xl shadow-black/20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-violet-500/8 pointer-events-none" />
-        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-32 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative rounded-3xl border border-primary/30 bg-card/90 backdrop-blur-xl p-8 shadow-2xl shadow-black/20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-violet-500/10 pointer-events-none" />
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Lock className="w-4 h-4 text-primary" />
-            <h2 className="text-xl font-display font-bold">Unlock All Signals</h2>
+        <div className="relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 border border-primary/25 text-primary text-xs font-bold mb-5">
+            <Lock className="w-3 h-3" />
+            You're seeing only 10% of the signals
           </div>
 
-          <p className="text-center text-sm text-muted-foreground mb-1">
-            You're on the <span className="font-semibold text-foreground">Free plan</span> — limited to 3 signals with 15-minute delayed data.
-          </p>
-          <p className="text-center text-sm text-muted-foreground mb-6">
-            Choose a plan to get real-time access.
+          <h2 className="text-2xl font-display font-bold mb-3">
+            Unlock Full Market Intelligence
+          </h2>
+
+          <p className="text-sm text-muted-foreground mb-6">
+            Get access to all real-time insider trades, options flow alerts, and AI-scored signals — the ones retail investors never see in time.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TierCard
-              plan="pro"
-              label="Pro"
-              price="€19"
-              features={TIER_FEATURES.pro}
-              highlighted
-            />
-            <TierCard
-              plan="elite"
-              label="Elite"
-              price="€49"
-              features={TIER_FEATURES.elite}
-            />
+          <ul className="grid grid-cols-1 gap-2.5 mb-7 text-left">
+            {[
+              { icon: Zap, text: "Unlimited real-time signals across all tickers" },
+              { icon: TrendingUp, text: "AI conviction scores + win-rate data" },
+              { icon: Bell, text: "Instant push alerts on high-conviction setups" },
+              { icon: Star, text: "Dark pool prints & institutional options flow" },
+            ].map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-3 text-sm">
+                <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/25 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <span>{text}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mb-4 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20">
+            <div className="text-xs font-bold uppercase tracking-widest text-primary mb-0.5">Early Access Pricing</div>
+            <div className="flex items-baseline justify-center gap-1">
+              <span className="text-4xl font-display font-bold">€9</span>
+              <span className="text-muted-foreground text-sm">/ month</span>
+            </div>
+            <div className="text-xs text-muted-foreground mt-0.5">Lock in this rate — price increases at launch</div>
           </div>
 
-          <p className="text-xs text-muted-foreground text-center mt-5">
-            Cancel anytime. No hidden fees. Billed monthly.
+          {error && <p className="text-xs text-destructive mb-3">{error}</p>}
+
+          <button
+            onClick={handleUnlock}
+            disabled={loading}
+            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02] transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Redirecting...
+              </>
+            ) : (
+              <>
+                Unlock Full Access (€9)
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+
+          <p className="text-xs text-muted-foreground mt-4">
+            Cancel anytime · No hidden fees · Billed monthly
           </p>
         </div>
       </div>
