@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check } from "lucide-react";
 
 const FEATURES = [
   {
@@ -41,6 +41,174 @@ const STATS = [
   { value: "<500ms", label: "Average signal latency" },
 ];
 
+type FreeTier = {
+  kind: "free";
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  highlighted: false;
+  cta: string;
+  ctaHref: string;
+  features: string[];
+};
+
+type PaidTier = {
+  kind: "paid";
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  highlighted: boolean;
+  badge?: string;
+  cta: string;
+  plan: "pro" | "elite";
+  features: string[];
+};
+
+type PricingTier = FreeTier | PaidTier;
+
+const PRICING_TIERS: PricingTier[] = [
+  {
+    kind: "free",
+    name: "Free",
+    price: "€0",
+    period: "forever",
+    description: "Get a taste of the edge.",
+    highlighted: false,
+    cta: "Start Free",
+    ctaHref: "/dashboard",
+    features: [
+      "3 signals per day",
+      "Delayed data (15 min)",
+      "Basic signal feed",
+      "Community access",
+    ],
+  },
+  {
+    kind: "paid",
+    name: "Pro",
+    price: "€19",
+    period: "/ month",
+    description: "For active traders who want a real edge.",
+    highlighted: true,
+    badge: "Most Popular",
+    cta: "Get Pro",
+    plan: "pro",
+    features: [
+      "Unlimited real-time signals",
+      "AI conviction scoring",
+      "Instant push alerts",
+      "Insider & options flow",
+      "Advanced filters",
+    ],
+  },
+  {
+    kind: "paid",
+    name: "Elite",
+    price: "€49",
+    period: "/ month",
+    description: "Maximum edge for serious traders.",
+    highlighted: false,
+    cta: "Get Elite",
+    plan: "elite",
+    features: [
+      "Everything in Pro",
+      "Dark pool data",
+      "Priority signal queue",
+      "Custom watchlists",
+      "Dedicated support",
+      "Early access to new features",
+    ],
+  },
+];
+
+async function startCheckout(plan: "pro" | "elite") {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const res = await fetch(`${base}/api/checkout/create-session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan }),
+  });
+  if (!res.ok) throw new Error("Failed to create checkout session");
+  const { url } = await res.json();
+  if (url) window.location.href = url;
+}
+
+function PricingCard({ tier, index }: { tier: PricingTier; index: number }) {
+  const [loading, setLoading] = React.useState(false);
+
+  async function handleCta() {
+    if (tier.kind !== "paid") return;
+    setLoading(true);
+    try {
+      await startCheckout(tier.plan);
+    } catch {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 * index + 0.2 }}
+      className={`relative flex flex-col rounded-3xl border p-8 ${
+        tier.highlighted
+          ? "border-primary/60 bg-card shadow-2xl shadow-primary/15 scale-[1.03]"
+          : "border-border/50 bg-card/50"
+      }`}
+    >
+      {tier.highlighted && tier.kind === "paid" && tier.badge && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-wide">
+          {tier.badge}
+        </div>
+      )}
+
+      <div className="mb-6">
+        <h3 className="text-lg font-display font-bold mb-1">{tier.name}</h3>
+        <p className="text-muted-foreground text-sm mb-4">{tier.description}</p>
+        <div className="flex items-end gap-1">
+          <span className="text-4xl font-display font-bold">{tier.price}</span>
+          <span className="text-muted-foreground text-sm mb-1">{tier.period}</span>
+        </div>
+      </div>
+
+      <ul className="space-y-2.5 mb-8 flex-1">
+        {tier.features.map((f) => (
+          <li key={f} className="flex items-start gap-2.5 text-sm text-foreground">
+            <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+            {f}
+          </li>
+        ))}
+      </ul>
+
+      {tier.kind === "paid" ? (
+        <button
+          onClick={handleCta}
+          disabled={loading}
+          className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none ${
+            tier.highlighted
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02]"
+              : "border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary"
+          }`}
+        >
+          {loading ? "Redirecting..." : tier.cta}
+          {!loading && <ArrowRight className="w-4 h-4" />}
+        </button>
+      ) : (
+        <Link
+          href={tier.ctaHref}
+          className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary transition-colors"
+        >
+          {tier.cta}
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      )}
+    </motion.div>
+  );
+}
+
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
@@ -69,7 +237,6 @@ export default function Landing() {
 
       {/* Hero */}
       <section className="relative flex-1 flex flex-col items-center justify-center text-center px-6 py-32 overflow-hidden">
-        {/* Background glows */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/15 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
 
@@ -79,7 +246,6 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
           className="relative z-10 max-w-4xl mx-auto"
         >
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium">
             <Zap className="w-3.5 h-3.5" />
             AI-Powered Market Intelligence
@@ -162,6 +328,26 @@ export default function Landing() {
                   <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="py-24 px-6 bg-card/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              Simple, transparent pricing.
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Start free, upgrade when you're ready. No lock-ins, cancel anytime.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            {PRICING_TIERS.map((tier, i) => (
+              <PricingCard key={tier.name} tier={tier} index={i} />
             ))}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2 } from "lucide-react";
+import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2, Star } from "lucide-react";
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
 
@@ -8,18 +8,39 @@ type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
 const FREE_SIGNAL_LIMIT = 3;
 
-async function startCheckout() {
+async function startCheckout(plan: "pro" | "elite") {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   const res = await fetch(`${base}/api/checkout/create-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan }),
   });
   if (!res.ok) throw new Error("Failed to create checkout session");
   const { url } = await res.json();
   if (url) window.location.href = url;
 }
 
-function PremiumPaywall() {
+const TIER_FEATURES = {
+  pro: [
+    { icon: Zap, text: "Unlimited real-time signals" },
+    { icon: TrendingUp, text: "AI conviction scoring" },
+    { icon: Bell, text: "Instant push alerts" },
+  ],
+  elite: [
+    { icon: Zap, text: "Everything in Pro" },
+    { icon: TrendingUp, text: "Dark pool data" },
+    { icon: Star, text: "Priority signal queue" },
+    { icon: Bell, text: "Dedicated support" },
+  ],
+};
+
+function TierCard({ plan, label, price, features, highlighted }: {
+  plan: "pro" | "elite";
+  label: string;
+  price: string;
+  features: { icon: React.ElementType; text: string }[];
+  highlighted?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,74 +48,116 @@ function PremiumPaywall() {
     setLoading(true);
     setError(null);
     try {
-      await startCheckout();
-    } catch (e: any) {
+      await startCheckout(plan);
+    } catch {
       setError("Something went wrong. Please try again.");
       setLoading(false);
     }
   }
 
   return (
+    <div className={`relative flex flex-col rounded-2xl border p-6 ${
+      highlighted
+        ? "border-primary/50 bg-primary/5"
+        : "border-border/50 bg-card/50"
+    }`}>
+      {highlighted && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+          Most Popular
+        </div>
+      )}
+
+      <div className="mb-5">
+        <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">{label}</div>
+        <div className="flex items-end gap-1">
+          <span className="text-3xl font-display font-bold">{price}</span>
+          <span className="text-muted-foreground text-sm mb-0.5">/ month</span>
+        </div>
+      </div>
+
+      <ul className="space-y-2.5 mb-6 flex-1">
+        {features.map(({ icon: Icon, text }) => (
+          <li key={text} className="flex items-center gap-2.5 text-sm text-foreground">
+            <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 ${
+              highlighted ? "bg-primary/15 border border-primary/20" : "bg-secondary border border-border/50"
+            }`}>
+              <Icon className={`w-3 h-3 ${highlighted ? "text-primary" : "text-muted-foreground"}`} />
+            </div>
+            {text}
+          </li>
+        ))}
+      </ul>
+
+      {error && <p className="text-xs text-destructive mb-3">{error}</p>}
+
+      <button
+        onClick={handleUpgrade}
+        disabled={loading}
+        className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none ${
+          highlighted
+            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02]"
+            : "border border-border/60 bg-secondary/40 text-foreground hover:bg-secondary"
+        }`}
+      >
+        {loading ? (
+          <>
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            Redirecting...
+          </>
+        ) : (
+          <>
+            Upgrade to {label}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
+
+function PremiumPaywall() {
+  return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative z-10 mx-auto max-w-xl -mt-2"
+      className="relative z-10 mx-auto max-w-2xl -mt-2"
     >
-      <div className="relative rounded-3xl border border-primary/30 bg-card/80 backdrop-blur-xl p-8 shadow-2xl shadow-primary/10 overflow-hidden text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-violet-500/10 pointer-events-none" />
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative rounded-3xl border border-border/50 bg-card/90 backdrop-blur-xl p-8 shadow-2xl shadow-black/20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-violet-500/8 pointer-events-none" />
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-32 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 mb-5 mx-auto">
-            <Lock className="w-6 h-6 text-primary" />
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Lock className="w-4 h-4 text-primary" />
+            <h2 className="text-xl font-display font-bold">Unlock All Signals</h2>
           </div>
 
-          <h2 className="text-2xl font-display font-bold mb-2">Premium Signals</h2>
-          <p className="text-muted-foreground mb-6">
-            Upgrade to EdgeIQ Pro to unlock:
+          <p className="text-center text-sm text-muted-foreground mb-1">
+            You're on the <span className="font-semibold text-foreground">Free plan</span> — limited to 3 signals with 15-minute delayed data.
+          </p>
+          <p className="text-center text-sm text-muted-foreground mb-6">
+            Choose a plan to get real-time access.
           </p>
 
-          <ul className="space-y-3 mb-8 text-left max-w-xs mx-auto">
-            {[
-              { icon: Zap, text: "Real-time high conviction trades" },
-              { icon: TrendingUp, text: "Advanced AI predictions" },
-              { icon: Bell, text: "Instant alerts" },
-            ].map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-3 text-sm font-medium text-foreground">
-                <div className="w-7 h-7 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-3.5 h-3.5 text-primary" />
-                </div>
-                {text}
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <TierCard
+              plan="pro"
+              label="Pro"
+              price="€19"
+              features={TIER_FEATURES.pro}
+              highlighted
+            />
+            <TierCard
+              plan="elite"
+              label="Elite"
+              price="€49"
+              features={TIER_FEATURES.elite}
+            />
+          </div>
 
-          {error && (
-            <p className="text-sm text-destructive mb-4">{error}</p>
-          )}
-
-          <button
-            onClick={handleUpgrade}
-            disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-[1.02] duration-200 disabled:opacity-60 disabled:pointer-events-none"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Redirecting...
-              </>
-            ) : (
-              <>
-                Upgrade to Pro
-                <span className="font-normal opacity-80">€19/month</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </>
-            )}
-          </button>
-
-          <p className="text-xs text-muted-foreground mt-4">
-            Cancel anytime. No hidden fees.
+          <p className="text-xs text-muted-foreground text-center mt-5">
+            Cancel anytime. No hidden fees. Billed monthly.
           </p>
         </div>
       </div>

@@ -3,8 +3,18 @@ import { getUncachableStripeClient, getStripePublishableKey } from "../lib/strip
 
 const router = Router();
 
-const PRO_PRICE_EUR_CENTS = 1900;
-const PRODUCT_NAME = "EdgeIQ Pro";
+const PLANS = {
+  pro: {
+    price: 1900,
+    name: "EdgeIQ Pro",
+    description: "Real-time signals, AI predictions, and instant alerts.",
+  },
+  elite: {
+    price: 4900,
+    name: "EdgeIQ Elite",
+    description: "Everything in Pro plus priority signals, dark pool data, and dedicated support.",
+  },
+};
 
 router.get("/checkout/config", async (_req, res) => {
   try {
@@ -19,6 +29,14 @@ router.post("/checkout/create-session", async (req, res) => {
   try {
     const stripe = await getUncachableStripeClient();
 
+    const planParam = req.body?.plan;
+    if (planParam !== "pro" && planParam !== "elite") {
+      res.status(400).json({ error: 'Invalid plan. Must be "pro" or "elite".' });
+      return;
+    }
+    const plan: "pro" | "elite" = planParam;
+    const planConfig = PLANS[plan];
+
     const origin = req.headers.origin || req.headers.referer || "http://localhost";
     const baseUrl = new URL(origin).origin;
 
@@ -28,11 +46,11 @@ router.post("/checkout/create-session", async (req, res) => {
         {
           price_data: {
             currency: "eur",
-            unit_amount: PRO_PRICE_EUR_CENTS,
+            unit_amount: planConfig.price,
             recurring: { interval: "month" },
             product_data: {
-              name: PRODUCT_NAME,
-              description: "Real-time signals, AI predictions, and instant alerts.",
+              name: planConfig.name,
+              description: planConfig.description,
             },
           },
           quantity: 1,
