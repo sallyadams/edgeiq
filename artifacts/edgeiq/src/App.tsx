@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/Layout";
 
 // Pages
+import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Signals from "@/pages/Signals";
 import Watchlist from "@/pages/Watchlist";
@@ -23,20 +24,34 @@ const queryClient = new QueryClient({
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/signals" component={Signals} />
-        <Route path="/watchlist" component={Watchlist} />
-        <Route path="/ticker/:symbol" component={TickerDetail} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/" component={Landing} />
+      <Route path="/dashboard">
+        <Layout>
+          <Dashboard />
+        </Layout>
+      </Route>
+      <Route path="/signals">
+        <Layout>
+          <Signals />
+        </Layout>
+      </Route>
+      <Route path="/watchlist">
+        <Layout>
+          <Watchlist />
+        </Layout>
+      </Route>
+      <Route path="/ticker/:symbol">
+        <Layout>
+          <TickerDetail />
+        </Layout>
+      </Route>
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
 function App() {
-  // Force dark mode class on html/body for the terminal aesthetic
   if (typeof document !== 'undefined') {
     document.documentElement.classList.add('dark');
   }
