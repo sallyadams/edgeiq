@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2 } from "lucide-react";
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
 
@@ -8,7 +8,32 @@ type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
 const FREE_SIGNAL_LIMIT = 3;
 
+async function startCheckout() {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const res = await fetch(`${base}/api/checkout/create-session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Failed to create checkout session");
+  const { url } = await res.json();
+  if (url) window.location.href = url;
+}
+
 function PremiumPaywall() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleUpgrade() {
+    setLoading(true);
+    setError(null);
+    try {
+      await startCheckout();
+    } catch (e: any) {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,10 +70,27 @@ function PremiumPaywall() {
             ))}
           </ul>
 
-          <button className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-[1.02] duration-200">
-            Upgrade to Pro
-            <span className="font-normal opacity-80">€19/month</span>
-            <ArrowRight className="w-4 h-4 ml-1" />
+          {error && (
+            <p className="text-sm text-destructive mb-4">{error}</p>
+          )}
+
+          <button
+            onClick={handleUpgrade}
+            disabled={loading}
+            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-[1.02] duration-200 disabled:opacity-60 disabled:pointer-events-none"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Redirecting...
+              </>
+            ) : (
+              <>
+                Upgrade to Pro
+                <span className="font-normal opacity-80">€19/month</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </>
+            )}
           </button>
 
           <p className="text-xs text-muted-foreground mt-4">
@@ -67,14 +109,14 @@ export default function Signals() {
   const { data: signals, isLoading } = useGetSignals({
     type: filterType === "all" ? undefined : filterType,
     ticker: search || undefined,
-    limit: 50
+    limit: 50,
   });
 
-  const FILTERS: { label: string, value: GetSignalsType }[] = [
+  const FILTERS: { label: string; value: GetSignalsType }[] = [
     { label: "All Signals", value: "all" },
     { label: "Insider Trades", value: "insider" },
     { label: "Options Flow", value: "options" },
-    { label: "AI Sentiment", value: "sentiment" }
+    { label: "AI Sentiment", value: "sentiment" },
   ];
 
   const freeSignals = signals?.slice(0, FREE_SIGNAL_LIMIT) ?? [];
@@ -107,7 +149,7 @@ export default function Signals() {
       </div>
 
       <div className="flex flex-wrap gap-2 pb-4 border-b border-border/50">
-        {FILTERS.map(f => (
+        {FILTERS.map((f) => (
           <button
             key={f.value}
             onClick={() => setFilterType(f.value)}
@@ -152,7 +194,6 @@ export default function Signals() {
                   {lockedSignals.slice(0, 3).map((signal, i) => (
                     <div
                       key={signal.id}
-                      className="blur-sm opacity-60"
                       style={{ filter: `blur(${4 + i * 2}px)`, opacity: 0.5 - i * 0.1 }}
                     >
                       <SignalCard signal={signal} />
