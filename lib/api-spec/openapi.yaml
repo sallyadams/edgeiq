@@ -1,22 +1,27 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: EdgeIQ Market Intelligence API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: signals
+    description: Market signals and insider activity
+  - name: watchlist
+    description: User watchlist management
+  - name: market
+    description: Market data and quotes
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +29,158 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /signals:
+    get:
+      operationId: getSignals
+      tags: [signals]
+      summary: Get market signals (insider trades, options flow, sentiment)
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [insider, options, sentiment, all]
+        - name: ticker
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of signals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Signal"
+
+  /signals/top:
+    get:
+      operationId: getTopSignals
+      tags: [signals]
+      summary: Get top signals ranked by conviction score
+      responses:
+        "200":
+          description: Top signals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Signal"
+
+  /signals/{ticker}/history:
+    get:
+      operationId: getTickerSignalHistory
+      tags: [signals]
+      summary: Get signal history for a specific ticker
+      parameters:
+        - name: ticker
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Signal history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Signal"
+
+  /market/quote/{ticker}:
+    get:
+      operationId: getMarketQuote
+      tags: [market]
+      summary: Get current market quote for a ticker
+      parameters:
+        - name: ticker
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Market quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketQuote"
+
+  /market/stats:
+    get:
+      operationId: getMarketStats
+      tags: [market]
+      summary: Get overall market statistics and sentiment
+      responses:
+        "200":
+          description: Market stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketStats"
+
+  /watchlist:
+    get:
+      operationId: getWatchlist
+      tags: [watchlist]
+      summary: Get user watchlist
+      responses:
+        "200":
+          description: Watchlist items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WatchlistItem"
+    post:
+      operationId: addToWatchlist
+      tags: [watchlist]
+      summary: Add ticker to watchlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddWatchlistRequest"
+      responses:
+        "201":
+          description: Added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistItem"
+
+  /watchlist/{ticker}:
+    delete:
+      operationId: removeFromWatchlist
+      tags: [watchlist]
+      summary: Remove ticker from watchlist
+      parameters:
+        - name: ticker
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +191,151 @@ components:
       required:
         - status
 
+    Signal:
+      type: object
+      properties:
+        id:
+          type: number
+        ticker:
+          type: string
+        type:
+          type: string
+          enum: [insider, options, sentiment]
+        action:
+          type: string
+        description:
+          type: string
+        convictionScore:
+          type: number
+        winRate:
+          type: number
+        valueUsd:
+          type: number
+        reportedAt:
+          type: string
+        filerName:
+          type: string
+        expiryDate:
+          type: string
+        strikePrice:
+          type: number
+        optionType:
+          type: string
+        sentiment:
+          type: string
+        source:
+          type: string
+      required:
+        - id
+        - ticker
+        - type
+        - action
+        - description
+        - convictionScore
+        - winRate
+        - reportedAt
+
+    MarketQuote:
+      type: object
+      properties:
+        ticker:
+          type: string
+        price:
+          type: number
+        change:
+          type: number
+        changePercent:
+          type: number
+        volume:
+          type: number
+        marketCap:
+          type: string
+        pe:
+          type: number
+        high52w:
+          type: number
+        low52w:
+          type: number
+      required:
+        - ticker
+        - price
+        - change
+        - changePercent
+        - volume
+
+    MarketStats:
+      type: object
+      properties:
+        overallSentiment:
+          type: string
+        fearGreedIndex:
+          type: number
+        insiderBuyRatio:
+          type: number
+        optionsFlowBias:
+          type: string
+        totalSignalsToday:
+          type: number
+        bullishSignals:
+          type: number
+        bearishSignals:
+          type: number
+        topSectors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              score:
+                type: number
+            required:
+              - name
+              - score
+      required:
+        - overallSentiment
+        - fearGreedIndex
+        - insiderBuyRatio
+        - optionsFlowBias
+        - totalSignalsToday
+        - bullishSignals
+        - bearishSignals
+        - topSectors
+
+    WatchlistItem:
+      type: object
+      properties:
+        id:
+          type: number
+        ticker:
+          type: string
+        addedAt:
+          type: string
+        latestSignalScore:
+          type: number
+        alertsEnabled:
+          type: boolean
+      required:
+        - id
+        - ticker
+        - addedAt
+        - alertsEnabled
+
+    AddWatchlistRequest:
+      type: object
+      properties:
+        ticker:
+          type: string
+      required:
+        - ticker
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message

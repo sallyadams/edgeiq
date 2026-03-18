@@ -1,0 +1,18 @@
+packages:
+  "recharts": "Data visualization for signal history and conviction charts"
+  "framer-motion": "Smooth entry animations and interactive page transitions"
+  "date-fns": "Formatting signal timestamps and history dates"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes safely without conflicts"
+
+images:
+  - path: "artifacts/edgeiq/public/images/hero-mesh.png"
+    description: "Dark moody abstract gradient mesh background in deep navy, electric blue, and subtle emerald green with a premium fintech aesthetic"
+    aspect_ratio: "16:9"
+  - path: "artifacts/edgeiq/public/images/logo-mark.png"
+    description: "Minimalist geometric logo mark representing an edge or upward trend, in electric blue on a transparent background, modern and sharp"
+    aspect_ratio: "1:1"
+
+notes:
+  - "Assuming @workspace/api-client-react exports all generated hooks and types directly"
+  - "Application uses a forced dark mode aesthetic to mimic professional financial terminals"
