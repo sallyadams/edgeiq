@@ -263,20 +263,25 @@ export default function Landing() {
             Our AI analyzes institutional flows, insider activity, and options data to give you a real-time edge.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
-            >
-              Start Free
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl border border-border/60 bg-card/50 text-foreground font-semibold text-base hover:bg-card transition-colors backdrop-blur"
-            >
-              See Live Signals
-            </Link>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+              >
+                Start Free
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl border border-border/60 bg-card/50 text-foreground font-semibold text-base hover:bg-card transition-colors backdrop-blur"
+              >
+                See Live Signals
+              </Link>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Free access &nbsp;·&nbsp; No commitment &nbsp;·&nbsp; Upgrade anytime
+            </p>
           </div>
         </motion.div>
       </section>
