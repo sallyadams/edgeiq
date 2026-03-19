@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { signalsTable } from "@workspace/db/schema";
-import { eq, desc, sql, and, gte } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -13,7 +13,7 @@ const MOCK_PRICES: Record<string, { price: number; change: number; changePercent
   META: { price: 556.84, change: 8.23, changePercent: 1.50, volume: 14_300_000, marketCap: "1.42T", pe: 28.4, high52w: 589.00, low52w: 352.48 },
   AMZN: { price: 194.50, change: 2.10, changePercent: 1.09, volume: 31_500_000, marketCap: "2.04T", pe: 43.2, high52w: 218.00, low52w: 156.00 },
   GOOGL: { price: 178.34, change: -0.56, changePercent: -0.31, volume: 22_100_000, marketCap: "2.19T", pe: 25.1, high52w: 193.31, low52w: 129.40 },
-  AMD: { price: 168.42, change: 4.12, changePercent: 2.51, volume: 67_800_000, marketCap: "273B", pe: 288.5, high52w: 227.30, low52w: 116.37 },
+  AMD:  { price: 168.42, change: 4.12, changePercent: 2.51, volume: 67_800_000, marketCap: "273B", pe: 288.5, high52w: 227.30, low52w: 116.37 },
   PLTR: { price: 82.50, change: 5.20, changePercent: 6.72, volume: 124_000_000, marketCap: "177B", pe: 330.0, high52w: 83.89, low52w: 17.46 },
   COIN: { price: 245.30, change: 12.80, changePercent: 5.51, volume: 18_500_000, marketCap: "62B", pe: 41.2, high52w: 349.75, low52w: 115.45 },
 };
@@ -31,7 +31,6 @@ router.get("/market/quote/:ticker", async (req, res) => {
       high52w: 200 + Math.random() * 300,
       low52w: 50 + Math.random() * 100,
     };
-
     res.json({ ticker, ...base });
   } catch (err) {
     console.error(err);
@@ -41,25 +40,48 @@ router.get("/market/quote/:ticker", async (req, res) => {
 
 router.get("/market/stats", async (_req, res) => {
   try {
-    const totalSignals = await db.select({ count: sql<number>`count(*)` }).from(signalsTable);
-    const buySignals = await db.select({ count: sql<number>`count(*)` }).from(signalsTable).where(eq(signalsTable.action, "BUY"));
-    const total = Number(totalSignals[0].count) || 1;
-    const buys = Number(buySignals[0].count) || 0;
+    const rows = await db
+      .select({
+        total:          sql<number>`count(*)`,
+        bullish:        sql<number>`count(*) filter (where action in ('BUY','BULLISH'))`,
+        bearish:        sql<number>`count(*) filter (where action in ('SELL','BEARISH'))`,
+        insiderBuys:    sql<number>`count(*) filter (where type = 'insider' and action = 'BUY')`,
+        insiderSells:   sql<number>`count(*) filter (where type = 'insider' and action = 'SELL')`,
+        optionsBullish: sql<number>`count(*) filter (where type = 'options' and action in ('BUY','BULLISH'))`,
+        optionsBearish: sql<number>`count(*) filter (where type = 'options' and action in ('SELL','BEARISH'))`,
+      })
+      .from(signalsTable);
+
+    const r = rows[0];
+    const total        = Number(r.total)          || 0;
+    const bullish      = Number(r.bullish)         || 0;
+    const bearish      = Number(r.bearish)         || 0;
+    const insiderBuys  = Number(r.insiderBuys)     || 0;
+    const insiderSells = Number(r.insiderSells)    || 0;
+    const optBull      = Number(r.optionsBullish)  || 0;
+    const optBear      = Number(r.optionsBearish)  || 0;
+
+    const insiderBuyRatio = insiderSells > 0
+      ? Math.round((insiderBuys / insiderSells) * 100) / 100
+      : insiderBuys > 0 ? insiderBuys : 0;
+
+    const optionsFlowBias = optBull >= optBear ? "BULLISH" : "BEARISH";
+    const overallSentiment = bullish > bearish ? "BULLISH" : bullish < bearish ? "BEARISH" : "NEUTRAL";
 
     res.json({
-      overallSentiment: buys / total > 0.55 ? "BULLISH" : buys / total < 0.45 ? "BEARISH" : "NEUTRAL",
+      overallSentiment,
       fearGreedIndex: 58,
-      insiderBuyRatio: Math.round((buys / total) * 100) / 100,
-      optionsFlowBias: "BULLISH",
+      insiderBuyRatio,
+      optionsFlowBias,
       totalSignalsToday: total,
-      bullishSignals: buys,
-      bearishSignals: total - buys,
+      bullishSignals: optBull,
+      bearishSignals: optBear,
       topSectors: [
         { name: "Technology", score: 82 },
-        { name: "Energy", score: 71 },
+        { name: "Energy",     score: 71 },
         { name: "Healthcare", score: 65 },
         { name: "Financials", score: 58 },
-        { name: "Consumer", score: 49 },
+        { name: "Consumer",   score: 49 },
       ],
     });
   } catch (err) {
