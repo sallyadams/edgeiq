@@ -1,8 +1,31 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2, Star } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2, Star, CheckCircle2, X } from "lucide-react";
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
+
+const UNLOCK_KEY = "edgeiq_unlocked";
+
+function useUnlocked() {
+  const [unlocked, setUnlocked] = useState(() =>
+    typeof window !== "undefined" && localStorage.getItem(UNLOCK_KEY) === "true"
+  );
+  const [justUpgraded, setJustUpgraded] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upgraded") === "true") {
+      localStorage.setItem(UNLOCK_KEY, "true");
+      setUnlocked(true);
+      setJustUpgraded(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("upgraded");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
+
+  return { unlocked, justUpgraded };
+}
 
 type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
@@ -212,6 +235,8 @@ function PremiumPaywall() {
 export default function Signals() {
   const [filterType, setFilterType] = useState<GetSignalsType>("all");
   const [search, setSearch] = useState("");
+  const [bannerVisible, setBannerVisible] = useState(true);
+  const { unlocked, justUpgraded } = useUnlocked();
 
   const { data: signals, isLoading } = useGetSignals({
     type: filterType === "all" ? undefined : filterType,
@@ -226,12 +251,35 @@ export default function Signals() {
     { label: "AI Sentiment", value: "sentiment" },
   ];
 
-  const freeSignals = signals?.slice(0, FREE_SIGNAL_LIMIT) ?? [];
-  const lockedSignals = signals?.slice(FREE_SIGNAL_LIMIT) ?? [];
-  const hasLocked = !isLoading && lockedSignals.length > 0;
+  const visibleSignals = unlocked ? (signals ?? []) : (signals?.slice(0, FREE_SIGNAL_LIMIT) ?? []);
+  const lockedSignals  = unlocked ? [] : (signals?.slice(FREE_SIGNAL_LIMIT) ?? []);
+  const hasLocked = !isLoading && !unlocked && lockedSignals.length > 0;
 
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
+
+      <AnimatePresence>
+        {justUpgraded && bannerVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            className="flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-green-500/10 border border-green-500/30 text-green-400"
+          >
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+              <div>
+                <p className="font-bold text-sm">You're in — full access unlocked!</p>
+                <p className="text-xs text-green-400/80 mt-0.5">Welcome to EdgeIQ Early Access. All signals are now visible.</p>
+              </div>
+            </div>
+            <button onClick={() => setBannerVisible(false)} className="text-green-400/60 hover:text-green-400 transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold tracking-tight mb-2">Signal Feed</h1>
@@ -284,11 +332,11 @@ export default function Signals() {
           </div>
         ) : (
           <>
-            {freeSignals.map((signal, i) => (
+            {visibleSignals.map((signal, i) => (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: i * 0.03 }}
                 key={signal.id}
               >
                 <SignalCard signal={signal} />
