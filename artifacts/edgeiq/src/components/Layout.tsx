@@ -1,20 +1,23 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Activity, LayoutDashboard, Star, TrendingUp, Search, Bell, LogIn, LogOut, Menu, X } from "lucide-react";
+import { Activity, LayoutDashboard, Star, Search, Bell, LogIn, LogOut, Menu, X, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@workspace/replit-auth-web";
-
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/signals", label: "Signal Feed", icon: Activity },
-  { href: "/watchlist", label: "Watchlist", icon: Star },
-];
+import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [langOpen, setLangOpen] = React.useState(false);
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
+  const { locale, setLocale, t } = useI18n();
+
+  const NAV_ITEMS = [
+    { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
+    { href: "/signals", label: t.nav.signalFeed, icon: Activity },
+    { href: "/watchlist", label: t.nav.watchlist, icon: Star },
+  ];
 
   const initials = isAuthenticated && user
     ? `${(user.firstName?.[0] || "").toUpperCase()}${(user.lastName?.[0] || "").toUpperCase()}` || user.id.slice(0, 2).toUpperCase()
@@ -23,6 +26,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const displayName = isAuthenticated && user
     ? [user.firstName, user.lastName].filter(Boolean).join(" ") || "User"
     : "";
+
+  const langRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground overflow-hidden">
@@ -40,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <nav className="flex-1 py-6 px-4 space-y-2">
           <div className="mb-6 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Menu
+            {t.nav.menu}
           </div>
           {NAV_ITEMS.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
@@ -65,7 +77,34 @@ export function Layout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="p-4 border-t border-border/50">
+        <div className="p-4 space-y-3 border-t border-border/50">
+          <div className="relative" ref={langRef}>
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors border border-border/50 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <Globe className="w-4 h-4" />
+              <span>{LOCALE_FLAGS[locale]} {LOCALE_LABELS[locale]}</span>
+            </button>
+            {langOpen && (
+              <div className="absolute bottom-full left-0 right-0 mb-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50">
+                {(Object.keys(LOCALE_LABELS) as Locale[]).map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => { setLocale(l); setLangOpen(false); }}
+                    className={cn(
+                      "w-full flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-secondary/50 transition-colors",
+                      l === locale ? "bg-primary/10 text-primary font-medium" : "text-foreground"
+                    )}
+                  >
+                    <span>{LOCALE_FLAGS[l]}</span>
+                    <span>{LOCALE_LABELS[l]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {authLoading ? (
             <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-secondary/30 border border-border/50">
               <div className="w-8 h-8 rounded-full bg-secondary animate-pulse" />
@@ -86,7 +125,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
               </div>
-              <button onClick={logout} title="Sign out" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
+              <button onClick={logout} title={t.nav.signOut} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
@@ -96,7 +135,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
             >
               <LogIn className="w-4 h-4" />
-              Sign In
+              {t.nav.signIn}
             </button>
           )}
         </div>
@@ -118,7 +157,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Search className="w-4 h-4 text-muted-foreground" />
             <input 
               type="text" 
-              placeholder="Search tickers (e.g. AAPL)..." 
+              placeholder={t.nav.searchTickers}
               className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground w-full font-mono"
             />
           </div>
@@ -131,13 +170,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {!authLoading && !isAuthenticated && (
               <Button onClick={login} className="hidden sm:flex font-semibold shadow-lg shadow-primary/20">
                 <LogIn className="w-4 h-4 mr-2" />
-                Sign In
+                {t.nav.signIn}
               </Button>
             )}
             {isAuthenticated && (
               <Button onClick={logout} variant="outline" className="hidden sm:flex font-semibold">
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                {t.nav.signOut}
               </Button>
             )}
           </div>
@@ -146,7 +185,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {isMobileMenuOpen && (
           <div className="absolute inset-0 bg-background/95 backdrop-blur-xl z-50 md:hidden flex flex-col p-6 animate-in slide-in-from-top-4">
             <div className="flex justify-between items-center mb-8">
-              <span className="font-display font-bold text-2xl text-foreground">Menu</span>
+              <span className="font-display font-bold text-2xl text-foreground">{t.nav.menu}</span>
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-muted-foreground">
                 <X className="w-8 h-8" />
               </button>
@@ -164,16 +203,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               ))}
             </nav>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {(Object.keys(LOCALE_LABELS) as Locale[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLocale(l)}
+                  className={cn(
+                    "px-3 py-2 rounded-xl text-sm transition-colors",
+                    l === locale ? "bg-primary/10 text-primary font-medium border border-primary/30" : "bg-secondary/50 text-muted-foreground"
+                  )}
+                >
+                  {LOCALE_FLAGS[l]} {LOCALE_LABELS[l]}
+                </button>
+              ))}
+            </div>
             <div className="mt-auto pt-6 border-t border-border/50">
               {isAuthenticated ? (
                 <button onClick={logout} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-secondary text-foreground font-semibold">
                   <LogOut className="w-5 h-5" />
-                  Sign Out
+                  {t.nav.signOut}
                 </button>
               ) : (
                 <button onClick={login} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground font-semibold">
                   <LogIn className="w-5 h-5" />
-                  Sign In
+                  {t.nav.signIn}
                 </button>
               )}
             </div>

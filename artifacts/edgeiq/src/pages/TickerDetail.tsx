@@ -10,15 +10,16 @@ import { useGetMarketQuote, useGetTickerSignalHistory } from "@workspace/api-cli
 import { SignalCard } from "@/components/SignalCard";
 import { formatCurrency, formatPercent, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useI18n } from "@/i18n";
 
 export default function TickerDetail() {
   const { symbol } = useParams();
   const ticker = symbol?.toUpperCase() || "";
+  const { t } = useI18n();
   
   const { data: quote, isLoading: quoteLoading } = useGetMarketQuote(ticker);
   const { data: history, isLoading: historyLoading } = useGetTickerSignalHistory(ticker);
 
-  // Transform history data for charts
   const chartData = history?.map(h => ({
     date: new Date(h.reportedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
     score: h.convictionScore,
@@ -31,15 +32,14 @@ export default function TickerDetail() {
   return (
     <div className="space-y-8 pb-12 max-w-6xl mx-auto">
       <Link href="/signals" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-4">
-        <ArrowLeft className="w-4 h-4 mr-1" /> Back to Signals
+        <ArrowLeft className="w-4 h-4 mr-1" /> {t.ticker.backToSignals}
       </Link>
 
-      {/* Header / Quote Section */}
       <div className="bg-card border border-border/50 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
           <div className="flex items-center gap-4 mb-2">
             <h1 className="text-4xl md:text-5xl font-mono font-bold tracking-tighter">{ticker}</h1>
-            <Badge variant="outline" className="text-xs uppercase tracking-wider bg-background">Equity</Badge>
+            <Badge variant="outline" className="text-xs uppercase tracking-wider bg-background">{t.ticker.equity}</Badge>
           </div>
           {quoteLoading ? (
             <div className="h-10 w-48 bg-secondary/50 animate-pulse rounded-lg mt-4" />
@@ -51,36 +51,35 @@ export default function TickerDetail() {
               </span>
             </div>
           ) : (
-            <p className="text-muted-foreground">Quote data unavailable</p>
+            <p className="text-muted-foreground">{t.ticker.quoteUnavailable}</p>
           )}
         </div>
         
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-right">
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Volume</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">{t.ticker.volume}</p>
             <p className="font-mono font-medium">{quote?.volume ? (quote.volume / 1000000).toFixed(2) + "M" : "--"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Market Cap</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">{t.ticker.marketCap}</p>
             <p className="font-mono font-medium">{quote?.marketCap || "--"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">P/E Ratio</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">{t.ticker.peRatio}</p>
             <p className="font-mono font-medium">{quote?.pe || "--"}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">52W Range</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">{t.ticker.week52Range}</p>
             <p className="font-mono font-medium text-xs mt-0.5">{quote ? `$${quote.low52w} - $${quote.high52w}` : "--"}</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Charts Section */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-card border border-border/50 rounded-2xl p-6">
             <h3 className="text-lg font-display font-bold mb-6 flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" /> Signal Conviction Trend
+              <Target className="w-5 h-5 text-primary" /> {t.ticker.convictionTrend}
             </h3>
             
             <div className="h-[300px] w-full">
@@ -127,17 +126,16 @@ export default function TickerDetail() {
                 </ResponsiveContainer>
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground border border-dashed border-border rounded-xl">
-                  Not enough historical data
+                  {t.ticker.notEnoughData}
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Signal History List */}
         <div className="space-y-6">
           <h3 className="text-xl font-display font-bold flex items-center gap-2">
-            <Activity className="w-5 h-5 text-accent" /> Recent Signals
+            <Activity className="w-5 h-5 text-accent" /> {t.ticker.recentSignals}
           </h3>
           
           <div className="space-y-4">
@@ -158,7 +156,7 @@ export default function TickerDetail() {
               ))
             ) : (
               <p className="text-muted-foreground text-sm p-4 border border-dashed border-border rounded-xl text-center">
-                No signals recorded for this ticker yet.
+                {t.ticker.noSignalsForTicker}
               </p>
             )}
           </div>

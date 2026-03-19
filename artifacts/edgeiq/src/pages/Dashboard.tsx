@@ -6,15 +6,16 @@ import { SignalCard } from "@/components/SignalCard";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n";
 
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useGetMarketStats();
   const { data: topSignals, isLoading: topLoading } = useGetTopSignals();
   const { data: recentSignals, isLoading: recentLoading } = useGetSignals({ limit: 10 });
+  const { t } = useI18n();
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Hero Section with Mesh Background */}
       <div className="relative rounded-3xl overflow-hidden border border-border/50 bg-card shadow-2xl">
         <div className="absolute inset-0 z-0">
           <img 
@@ -28,29 +29,28 @@ export default function Dashboard() {
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 tracking-tight">
-              Market Intelligence, <span className="text-gradient">Weaponized.</span>
+              {t.dashboard.heroTitle} <span className="text-gradient">{t.dashboard.heroTitleHighlight}</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl">
-              Track institutional money, uncover unusual options flow, and trade alongside insiders with AI-driven conviction scoring.
+              {t.dashboard.heroDescription}
             </p>
           </div>
           <div className="flex flex-col items-end gap-2 bg-background/40 backdrop-blur-md p-4 rounded-2xl border border-border/50">
-            <span className="text-sm font-medium text-muted-foreground">Market Regime</span>
+            <span className="text-sm font-medium text-muted-foreground">{t.dashboard.marketRegime}</span>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
-              <span className="font-bold text-xl text-success">Risk-On / Bullish</span>
+              <span className="font-bold text-xl text-success">{t.dashboard.riskOnBullish}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Fear & Greed Index", value: stats?.fearGreedIndex || "--", sub: stats?.overallSentiment, icon: Zap, color: "text-warning" },
-          { label: "Insider Buy Ratio", value: stats ? `${stats.insiderBuyRatio.toFixed(2)}x` : "--", sub: "Historical avg 1.2x", icon: ShieldAlert, color: "text-primary" },
-          { label: "Options Flow Bias", value: stats?.optionsFlowBias || "--", sub: `${stats?.bullishSignals || 0} Bullish / ${stats?.bearishSignals || 0} Bearish`, icon: BarChart2, color: "text-success" },
-          { label: "Total Signals Today", value: stats?.totalSignalsToday || "--", sub: "Across all sectors", icon: Activity, color: "text-accent" }
+          { label: t.dashboard.fearGreedIndex, value: stats?.fearGreedIndex || "--", sub: stats?.overallSentiment, icon: Zap, color: "text-warning" },
+          { label: t.dashboard.insiderBuyRatio, value: stats ? `${stats.insiderBuyRatio.toFixed(2)}x` : "--", sub: t.dashboard.historicalAvg, icon: ShieldAlert, color: "text-primary" },
+          { label: t.dashboard.optionsFlowBias, value: stats?.optionsFlowBias || "--", sub: `${stats?.bullishSignals || 0} ${t.dashboard.bullish} / ${stats?.bearishSignals || 0} ${t.dashboard.bearish}`, icon: BarChart2, color: "text-success" },
+          { label: t.dashboard.totalSignalsToday, value: stats?.totalSignalsToday || "--", sub: t.dashboard.acrossAllSectors, icon: Activity, color: "text-accent" }
         ].map((stat, i) => (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -70,14 +70,13 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Feed */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-              <Activity className="w-6 h-6 text-primary" /> Live Signal Feed
+              <Activity className="w-6 h-6 text-primary" /> {t.dashboard.liveSignalFeed}
             </h2>
             <Link href="/signals" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
-              View All <ArrowRight className="w-4 h-4" />
+              {t.dashboard.viewAll} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           
@@ -99,11 +98,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Sidebar / Top Signals */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-              <Zap className="w-6 h-6 text-warning" /> High Conviction
+              <Zap className="w-6 h-6 text-warning" /> {t.dashboard.highConviction}
             </h2>
           </div>
           
@@ -130,7 +128,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <p className="font-mono font-bold text-lg text-primary">{signal.convictionScore}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase">Score</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">{t.dashboard.score}</p>
                   </div>
                 </div>
               ))}
@@ -138,7 +136,7 @@ export default function Dashboard() {
             
             <div className="mt-6 pt-4 border-t border-border/50 text-center">
               <Button variant="outline" className="w-full text-xs uppercase tracking-widest font-bold">
-                <Lock className="w-3 h-3 mr-2" /> Unlock Top 50 Signals
+                <Lock className="w-3 h-3 mr-2" /> {t.dashboard.unlockTop50}
               </Button>
             </div>
           </div>

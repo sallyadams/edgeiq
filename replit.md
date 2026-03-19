@@ -94,6 +94,17 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `artifacts/edgeiq` (`@workspace/edgeiq`)
+
+React + Vite frontend for the EdgeIQ market intelligence platform.
+
+- **Multi-language (i18n)**: 5 languages (EN, FR, DE, ES, NL) via custom React context (`src/i18n/`). `useI18n()` hook provides `{ locale, setLocale, t }`. Language persisted in `localStorage` key `edgeiq_locale`, auto-detects browser language. Language switcher in sidebar (desktop) and mobile menu.
+- **Pages**: Landing, Dashboard, Signals (with paywall), Watchlist, TickerDetail, NotFound — all fully translated.
+- **Auth**: Uses `@workspace/replit-auth-web` `useAuth()` hook. Sign-in/out in sidebar + header.
+- **Stripe**: €9/month early access checkout via `/api/checkout/create-session`. Unlock state in `localStorage` key `edgeiq_unlocked`.
+- **Signals**: 20 demo signals seeded, FREE_SIGNAL_LIMIT = 2, blurred paywall for locked signals.
+- **date-fns locales**: Signal timestamps use locale-aware `formatDistanceToNow`.
+
 ### `lib/replit-auth-web` (`@workspace/replit-auth-web`)
 
 Browser-side auth hook for React. Exports `useAuth()` which returns `{ user, isLoading, isAuthenticated, login, logout }`. Fetches `/api/auth/user` with credentials. No external dependencies beyond React.
