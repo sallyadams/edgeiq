@@ -42,8 +42,10 @@ router.post("/checkout/create-session", async (req, res) => {
     const plan: "early" | "pro" | "elite" = planParam;
     const planConfig = PLANS[plan];
 
-    const origin = req.headers.origin || req.headers.referer || "http://localhost";
-    const baseUrl = new URL(origin).origin;
+    const referer = req.headers.referer || req.headers.origin || "http://localhost";
+    const refererUrl = new URL(referer);
+    const baseUrl = refererUrl.origin;
+    const pathPrefix = refererUrl.pathname.replace(/\/signals.*$/, "").replace(/\/+$/, "");
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -61,8 +63,8 @@ router.post("/checkout/create-session", async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/signals?upgraded=true`,
-      cancel_url: `${baseUrl}/signals`,
+      success_url: `${baseUrl}${pathPrefix}/signals?upgraded=true`,
+      cancel_url: `${baseUrl}${pathPrefix}/signals`,
     });
 
     res.json({ url: session.url });

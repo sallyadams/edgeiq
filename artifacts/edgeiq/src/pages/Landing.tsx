@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check, Globe } from "lucide-react";
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
+import { useAuth } from "@workspace/replit-auth-web";
 
 async function startCheckout(plan: "pro" | "elite") {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -60,6 +61,7 @@ function LanguageSwitcher() {
 
 export default function Landing() {
   const { t } = useI18n();
+  const { isAuthenticated, login } = useAuth();
 
   const FEATURES = [
     { icon: TrendingUp, title: t.landing.featureInstitutional, description: t.landing.featureInstitutionalDesc, color: "text-primary", glow: "from-primary/20" },
@@ -172,15 +174,26 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
-            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              {t.landing.signIn}
-            </Link>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/30 hover:opacity-90 transition-opacity"
-            >
-              {t.landing.startFree}
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/30 hover:opacity-90 transition-opacity"
+              >
+                {t.nav.dashboard}
+              </Link>
+            ) : (
+              <>
+                <button onClick={login} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  {t.landing.signIn}
+                </button>
+                <button
+                  onClick={login}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/30 hover:opacity-90 transition-opacity"
+                >
+                  {t.landing.startFree}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -214,13 +227,23 @@ export default function Landing() {
 
           <div className="flex flex-col items-center gap-4">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
-              >
-                {t.landing.startFree}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+                >
+                  {t.nav.dashboard}
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              ) : (
+                <button
+                  onClick={login}
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+                >
+                  {t.landing.startFree}
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              )}
               <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl border border-border/60 bg-card/50 text-foreground font-semibold text-base hover:bg-card transition-colors backdrop-blur"
@@ -315,13 +338,23 @@ export default function Landing() {
             <p className="text-muted-foreground text-lg mb-8">
               {t.landing.ctaSubtitle}
             </p>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
-            >
-              {t.landing.startFree}
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+              >
+                {t.nav.dashboard}
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            ) : (
+              <button
+                onClick={login}
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+              >
+                {t.landing.startFree}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </section>
