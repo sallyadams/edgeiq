@@ -57,6 +57,9 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - Entry: `src/index.ts` — reads `PORT`, starts Express
 - App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
 - Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
+- Authentication: Replit Auth (OpenID Connect with PKCE) via `openid-client`, session cookies, DB-backed sessions
+- Auth routes: `/api/login`, `/api/callback`, `/api/logout`, `/api/auth/user`
+- Auth middleware in `src/middlewares/authMiddleware.ts` populates `req.user` / `req.isAuthenticated()`
 - Depends on: `@workspace/db`, `@workspace/api-zod`
 - `pnpm --filter @workspace/api-server run dev` — run the dev server
 - `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
@@ -90,6 +93,10 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 ### `lib/api-client-react` (`@workspace/api-client-react`)
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
+
+### `lib/replit-auth-web` (`@workspace/replit-auth-web`)
+
+Browser-side auth hook for React. Exports `useAuth()` which returns `{ user, isLoading, isAuthenticated, login, logout }`. Fetches `/api/auth/user` with credentials. No external dependencies beyond React.
 
 ### `scripts` (`@workspace/scripts`)
 

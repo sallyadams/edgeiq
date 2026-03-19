@@ -1,8 +1,9 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Activity, LayoutDashboard, Star, TrendingUp, Search, Bell, Settings, Menu, X } from "lucide-react";
+import { Activity, LayoutDashboard, Star, TrendingUp, Search, Bell, LogIn, LogOut, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { useAuth } from "@workspace/replit-auth-web";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -13,10 +14,18 @@ const NAV_ITEMS = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
+
+  const initials = isAuthenticated && user
+    ? `${(user.firstName?.[0] || "").toUpperCase()}${(user.lastName?.[0] || "").toUpperCase()}` || user.id.slice(0, 2).toUpperCase()
+    : "";
+
+  const displayName = isAuthenticated && user
+    ? [user.firstName, user.lastName].filter(Boolean).join(" ") || "User"
+    : "";
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground overflow-hidden">
-      {/* Sidebar (Desktop) */}
       <aside className="hidden md:flex w-64 flex-col border-r border-border/50 bg-card/30 backdrop-blur-xl relative z-20">
         <div className="h-16 flex items-center px-6 border-b border-border/50">
           <img 
@@ -57,22 +66,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="p-4 border-t border-border/50">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer border border-border/50">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-primary-foreground font-bold text-sm shadow-lg">
-              JS
+          {authLoading ? (
+            <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-secondary/30 border border-border/50">
+              <div className="w-8 h-8 rounded-full bg-secondary animate-pulse" />
+              <div className="flex-1 space-y-1">
+                <div className="h-3 w-20 bg-secondary animate-pulse rounded" />
+                <div className="h-2 w-14 bg-secondary animate-pulse rounded" />
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">J. Smith</p>
-              <p className="text-xs text-muted-foreground truncate">Pro Tier</p>
+          ) : isAuthenticated ? (
+            <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-secondary/30 border border-border/50">
+              {user?.profileImageUrl ? (
+                <img src={user.profileImageUrl} alt={displayName} className="w-8 h-8 rounded-full object-cover shadow-lg" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-primary-foreground font-bold text-sm shadow-lg">
+                  {initials}
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
+              </div>
+              <button onClick={logout} title="Sign out" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <Settings className="w-4 h-4 text-muted-foreground" />
-          </div>
+          ) : (
+            <button
+              onClick={login}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </button>
+          )}
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 relative z-10 overflow-hidden">
-        {/* Top Header */}
         <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-border/50 bg-background/80 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center md:hidden">
             <button 
@@ -98,14 +128,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border border-background"></span>
             </button>
-            <Button className="hidden sm:flex font-semibold shadow-lg shadow-primary/20">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Upgrade to Alpha
-            </Button>
+            {!authLoading && !isAuthenticated && (
+              <Button onClick={login} className="hidden sm:flex font-semibold shadow-lg shadow-primary/20">
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            )}
+            {isAuthenticated && (
+              <Button onClick={logout} variant="outline" className="hidden sm:flex font-semibold">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            )}
           </div>
         </header>
 
-        {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
           <div className="absolute inset-0 bg-background/95 backdrop-blur-xl z-50 md:hidden flex flex-col p-6 animate-in slide-in-from-top-4">
             <div className="flex justify-between items-center mb-8">
@@ -127,12 +164,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               ))}
             </nav>
+            <div className="mt-auto pt-6 border-t border-border/50">
+              {isAuthenticated ? (
+                <button onClick={logout} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-secondary text-foreground font-semibold">
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+              ) : (
+                <button onClick={login} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground font-semibold">
+                  <LogIn className="w-5 h-5" />
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Page Content */}
         <div className="flex-1 overflow-y-auto scrollbar-hide relative">
-          {/* Subtle background glow effect */}
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10 mix-blend-screen" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-success/5 rounded-full blur-[100px] pointer-events-none -z-10 mix-blend-screen" />
           
