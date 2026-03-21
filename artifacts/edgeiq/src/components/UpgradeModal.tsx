@@ -5,26 +5,14 @@ import { useI18n } from "@/i18n";
 
 const UNLOCK_KEY = "edgeiq_unlocked";
 
-async function startCheckout(plan: "pro" | "elite") {
-  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const res = await fetch(`${base}/api/checkout/create-session`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ plan }),
-  });
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "Unknown error");
-    console.error("[checkout] API error:", res.status, errText);
-    throw new Error(`Checkout failed: ${res.status}`);
-  }
-  const { url } = await res.json();
-  if (url) {
-    window.location.href = url;
-  } else {
-    console.error("[checkout] No URL returned from Stripe");
-    throw new Error("No checkout URL");
-  }
+const STRIPE_PAYMENT_LINKS: Record<string, string> = {
+  pro: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
+  elite: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
+};
+
+function startCheckout(plan: "pro" | "elite") {
+  const url = STRIPE_PAYMENT_LINKS[plan];
+  window.location.href = url;
 }
 
 export function useUnlocked() {
