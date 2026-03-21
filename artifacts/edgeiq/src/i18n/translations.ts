@@ -45,6 +45,23 @@ type TranslationKeys = {
     highConviction: string;
     score: string;
     unlockTop50: string;
+    featuredSignal: string;
+    highConvictionSignal: string;
+    viewFullAnalysis: string;
+    signalsDetected: string;
+    tradersUpgraded: string;
+    freePlan: string;
+    unlockAllSignals: string;
+  };
+  upgradeModal: {
+    title: string;
+    subtitle: string;
+    featureSignals: string;
+    featureAi: string;
+    featureAlerts: string;
+    featureDarkPool: string;
+    upgradeNow: string;
+    cancelAnytime: string;
   };
   signals: {
     title: string;
@@ -93,6 +110,8 @@ type TranslationKeys = {
     histWinRate: string;
     strike: string;
     entity: string;
+    aiInsight: string;
+    upgradeToUnlock: string;
   };
   ticker: {
     backToSignals: string;
@@ -203,6 +222,23 @@ const en: TranslationKeys = {
     highConviction: "High Conviction",
     score: "Score",
     unlockTop50: "Unlock Top 50 Signals",
+    featuredSignal: "Featured Signal",
+    highConvictionSignal: "HIGH CONVICTION SIGNAL",
+    viewFullAnalysis: "View Full Analysis",
+    signalsDetected: "signals detected in the last hour",
+    tradersUpgraded: "traders upgraded recently",
+    freePlan: "Free Plan",
+    unlockAllSignals: "Unlock All Signals",
+  },
+  upgradeModal: {
+    title: "You've reached your limit",
+    subtitle: "Unlock 50+ signals, AI insights, and real-time alerts.",
+    featureSignals: "50+ high-conviction signals daily",
+    featureAi: "AI insights on every signal",
+    featureAlerts: "Real-time push alerts",
+    featureDarkPool: "Dark pool & institutional flow",
+    upgradeNow: "Upgrade Now",
+    cancelAnytime: "Cancel anytime \u00b7 No hidden fees",
   },
   signals: {
     title: "Signal Feed",
@@ -251,6 +287,8 @@ const en: TranslationKeys = {
     histWinRate: "Hist. Win Rate",
     strike: "Strike",
     entity: "Entity",
+    aiInsight: "AI Insight",
+    upgradeToUnlock: "Upgrade to unlock",
   },
   ticker: {
     backToSignals: "Back to Signals",
@@ -360,7 +398,24 @@ const fr: TranslationKeys = {
     viewAll: "Tout voir",
     highConviction: "Haute conviction",
     score: "Score",
-    unlockTop50: "Débloquer le Top 50",
+    unlockTop50: "D\u00e9bloquer le Top 50",
+    featuredSignal: "Signal vedette",
+    highConvictionSignal: "SIGNAL HAUTE CONVICTION",
+    viewFullAnalysis: "Voir l'analyse compl\u00e8te",
+    signalsDetected: "signaux d\u00e9tect\u00e9s dans la derni\u00e8re heure",
+    tradersUpgraded: "traders ont pass\u00e9 au Pro r\u00e9cemment",
+    freePlan: "Plan gratuit",
+    unlockAllSignals: "D\u00e9bloquer tous les signaux",
+  },
+  upgradeModal: {
+    title: "Vous avez atteint votre limite",
+    subtitle: "D\u00e9bloquez 50+ signaux, analyses IA et alertes en temps r\u00e9el.",
+    featureSignals: "50+ signaux haute conviction par jour",
+    featureAi: "Analyses IA sur chaque signal",
+    featureAlerts: "Alertes push en temps r\u00e9el",
+    featureDarkPool: "Flux dark pool & institutionnel",
+    upgradeNow: "Passer au Pro",
+    cancelAnytime: "Annulable \u00e0 tout moment \u00b7 Sans frais cach\u00e9s",
   },
   signals: {
     title: "Flux de signaux",
@@ -406,9 +461,11 @@ const fr: TranslationKeys = {
   signalCard: {
     conviction: "Conviction",
     value: "Valeur",
-    histWinRate: "Taux de réussite hist.",
+    histWinRate: "Taux de r\u00e9ussite hist.",
     strike: "Strike",
-    entity: "Entité",
+    entity: "Entit\u00e9",
+    aiInsight: "Analyse IA",
+    upgradeToUnlock: "Passez au Pro pour d\u00e9bloquer",
   },
   ticker: {
     backToSignals: "Retour aux signaux",
@@ -519,6 +576,23 @@ const de: TranslationKeys = {
     highConviction: "Hohe Überzeugung",
     score: "Score",
     unlockTop50: "Top 50 Signale freischalten",
+    featuredSignal: "Top-Signal",
+    highConvictionSignal: "SIGNAL MIT HOHER \u00dcBERZEUGUNG",
+    viewFullAnalysis: "Vollst\u00e4ndige Analyse ansehen",
+    signalsDetected: "Signale in der letzten Stunde erkannt",
+    tradersUpgraded: "Trader haben k\u00fcrzlich ein Upgrade durchgef\u00fchrt",
+    freePlan: "Kostenloser Plan",
+    unlockAllSignals: "Alle Signale freischalten",
+  },
+  upgradeModal: {
+    title: "Sie haben Ihr Limit erreicht",
+    subtitle: "Schalten Sie 50+ Signale, KI-Analysen und Echtzeit-Warnungen frei.",
+    featureSignals: "50+ Signale mit hoher \u00dcberzeugung t\u00e4glich",
+    featureAi: "KI-Analysen f\u00fcr jedes Signal",
+    featureAlerts: "Echtzeit-Push-Warnungen",
+    featureDarkPool: "Dark-Pool & institutioneller Fluss",
+    upgradeNow: "Jetzt upgraden",
+    cancelAnytime: "Jederzeit k\u00fcndbar \u00b7 Keine versteckten Geb\u00fchren",
   },
   signals: {
     title: "Signal-Feed",
@@ -562,11 +636,13 @@ const de: TranslationKeys = {
     analyze: "Analysieren",
   },
   signalCard: {
-    conviction: "Überzeugung",
+    conviction: "\u00dcberzeugung",
     value: "Wert",
     histWinRate: "Hist. Gewinnrate",
     strike: "Strike",
     entity: "Unternehmen",
+    aiInsight: "KI-Analyse",
+    upgradeToUnlock: "Upgrade zum Freischalten",
   },
   ticker: {
     backToSignals: "Zurück zu Signalen",
@@ -677,9 +753,26 @@ const es: TranslationKeys = {
     highConviction: "Alta convicción",
     score: "Puntuación",
     unlockTop50: "Desbloquear Top 50",
+    featuredSignal: "Se\u00f1al destacada",
+    highConvictionSignal: "SE\u00d1AL DE ALTA CONVICCI\u00d3N",
+    viewFullAnalysis: "Ver an\u00e1lisis completo",
+    signalsDetected: "se\u00f1ales detectadas en la \u00faltima hora",
+    tradersUpgraded: "traders mejoraron recientemente",
+    freePlan: "Plan gratuito",
+    unlockAllSignals: "Desbloquear todas las se\u00f1ales",
+  },
+  upgradeModal: {
+    title: "Has alcanzado tu l\u00edmite",
+    subtitle: "Desbloquea 50+ se\u00f1ales, an\u00e1lisis IA y alertas en tiempo real.",
+    featureSignals: "50+ se\u00f1ales de alta convicci\u00f3n al d\u00eda",
+    featureAi: "An\u00e1lisis IA en cada se\u00f1al",
+    featureAlerts: "Alertas push en tiempo real",
+    featureDarkPool: "Dark pool & flujo institucional",
+    upgradeNow: "Mejorar ahora",
+    cancelAnytime: "Cancela cuando quieras \u00b7 Sin cargos ocultos",
   },
   signals: {
-    title: "Feed de señales",
+    title: "Feed de se\u00f1ales",
     subtitle: "Alertas en tiempo real para actividad inusual del mercado.",
     filterByTicker: "Filtrar por ticker...",
     allSignals: "Todas las señales",
@@ -720,11 +813,13 @@ const es: TranslationKeys = {
     analyze: "Analizar",
   },
   signalCard: {
-    conviction: "Convicción",
+    conviction: "Convicci\u00f3n",
     value: "Valor",
     histWinRate: "Tasa hist. de acierto",
     strike: "Strike",
     entity: "Entidad",
+    aiInsight: "An\u00e1lisis IA",
+    upgradeToUnlock: "Mejora para desbloquear",
   },
   ticker: {
     backToSignals: "Volver a señales",
@@ -835,6 +930,23 @@ const nl: TranslationKeys = {
     highConviction: "Hoge overtuiging",
     score: "Score",
     unlockTop50: "Top 50 signalen vrijgeven",
+    featuredSignal: "Uitgelicht signaal",
+    highConvictionSignal: "SIGNAAL MET HOGE OVERTUIGING",
+    viewFullAnalysis: "Volledige analyse bekijken",
+    signalsDetected: "signalen gedetecteerd in het laatste uur",
+    tradersUpgraded: "traders hebben recent een upgrade gedaan",
+    freePlan: "Gratis plan",
+    unlockAllSignals: "Alle signalen ontgrendelen",
+  },
+  upgradeModal: {
+    title: "Je hebt je limiet bereikt",
+    subtitle: "Ontgrendel 50+ signalen, AI-analyses en realtime-meldingen.",
+    featureSignals: "50+ signalen met hoge overtuiging per dag",
+    featureAi: "AI-analyses bij elk signaal",
+    featureAlerts: "Realtime push-meldingen",
+    featureDarkPool: "Dark pool & institutionele stromen",
+    upgradeNow: "Nu upgraden",
+    cancelAnytime: "Altijd opzegbaar \u00b7 Geen verborgen kosten",
   },
   signals: {
     title: "Signaalfeed",
@@ -883,6 +995,8 @@ const nl: TranslationKeys = {
     histWinRate: "Hist. winstpercentage",
     strike: "Strike",
     entity: "Entiteit",
+    aiInsight: "AI-analyse",
+    upgradeToUnlock: "Upgrade om te ontgrendelen",
   },
   ticker: {
     backToSignals: "Terug naar signalen",

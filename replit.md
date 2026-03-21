@@ -105,10 +105,16 @@ React + Vite frontend for the EdgeIQ market intelligence platform.
 - **Auth**: Uses `@workspace/replit-auth-web` `useAuth()` hook. Sign-in/out in sidebar + header.
 - **Stripe**: €19/month Pro and €49/month Elite checkout via `/api/checkout/create-session`. Unlock state in `localStorage` key `edgeiq_unlocked`.
 - **Signals**: 20 demo signals seeded, FREE_SIGNAL_LIMIT = 3, blurred paywall for locked signals.
-- **AI Insights**: Each signal includes an `aiInsight` field with institutional-grade analysis explaining the signal's significance. Displayed in a styled box with sparkle icon on the SignalCard.
+- **AI Insights**: Each signal includes an `aiInsight` field with institutional-grade analysis explaining the signal's significance. Displayed in a styled box with sparkle icon on the SignalCard. Free users see blurred AI insights with "Upgrade to unlock" button overlay.
 - **High Conviction Badge**: Signals with `convictionScore >= 85` show a "HIGH CONVICTION" flame badge, primary-colored top border glow, and percentage next to the action badge.
+- **Activation Flow Components**:
+  - `UpgradeModal.tsx` — Triggered from locked content, shows feature list + Stripe checkout. Exports `useUnlocked()` hook (shared across pages).
+  - `FeaturedSignal.tsx` — Prominent high-conviction signal card at top of Dashboard with conviction score ring, AI insight (locked/unlocked), and "View Full Analysis" CTA.
+  - `LiveActivityTicker.tsx` — Animated ticker showing "+N signals detected in the last hour" and "N traders upgraded recently" with randomized realistic counts.
+  - `SignalCard.tsx` — Accepts `lockInsight` and `onUpgradeClick` props to blur AI insights for free users with an upgrade button overlay.
+- **Layout sidebar**: Shows "Free Plan" badge and "Unlock All Signals" CTA button for non-unlocked users.
 - **Landing page**: Aggressive conversion-optimized copy — "Start Free — Get 3 Live Signals" CTA, "Most traders choose this" Pro badge, urgency text under Pro/Elite buttons, friction triggers (X marks) on Free plan showing limitations, stronger final CTA "Get Your First Winning Signal in Seconds". All copy translated across 5 languages.
-- **i18n keys for landing**: `proUrgency`, `eliteUrgency`, `freeLimitation1`, `freeLimitation2`, `tradersBadge` added to all 5 locales.
+- **i18n keys**: Full activation flow translated in all 5 locales — `upgradeModal.*`, `signalCard.aiInsight/upgradeToUnlock`, `dashboard.featuredSignal/highConvictionSignal/viewFullAnalysis/signalsDetected/tradersUpgraded/freePlan/unlockAllSignals`, `proUrgency`, `eliteUrgency`, `freeLimitation1`, `freeLimitation2`, `tradersBadge`.
 - **date-fns locales**: Signal timestamps use locale-aware `formatDistanceToNow`.
 
 ### `lib/replit-auth-web` (`@workspace/replit-auth-web`)

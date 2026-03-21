@@ -1,10 +1,11 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Activity, LayoutDashboard, Star, Search, Bell, LogIn, LogOut, Menu, X, Globe } from "lucide-react";
+import { Activity, LayoutDashboard, Star, Search, Bell, LogIn, LogOut, Menu, X, Globe, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@workspace/replit-auth-web";
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
+import { useUnlocked, UpgradeModal } from "./UpgradeModal";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -12,6 +13,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [langOpen, setLangOpen] = React.useState(false);
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { locale, setLocale, t } = useI18n();
+  const { unlocked } = useUnlocked();
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
 
   const NAV_ITEMS = [
     { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
@@ -38,6 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground overflow-hidden">
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
       <aside className="hidden md:flex w-64 flex-col border-r border-border/50 bg-card/30 backdrop-blur-xl relative z-20">
         <div className="h-16 flex items-center px-6 border-b border-border/50">
           <img 
@@ -78,6 +82,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="p-4 space-y-3 border-t border-border/50">
+          {!unlocked && (
+            <button
+              onClick={() => setUpgradeOpen(true)}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
+            >
+              <Lock className="w-4 h-4" />
+              {t.dashboard.unlockAllSignals}
+            </button>
+          )}
+          {!unlocked && (
+            <div className="flex items-center justify-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+              {t.dashboard.freePlan}
+            </div>
+          )}
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen(!langOpen)}

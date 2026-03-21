@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, fr, de, es, nl } from "date-fns/locale";
-import { TrendingUp, TrendingDown, Users, BrainCircuit, Activity, Flame, Sparkles } from "lucide-react";
+import { TrendingUp, TrendingDown, Users, BrainCircuit, Activity, Flame, Sparkles, Lock } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { cn, formatCurrency, formatPercent } from "@/lib/utils";
 import type { Signal } from "@workspace/api-client-react";
@@ -13,6 +13,8 @@ const dateFnsLocales = { en: enUS, fr, de, es, nl } as const;
 interface SignalCardProps {
   signal: Signal;
   compact?: boolean;
+  lockInsight?: boolean;
+  onUpgradeClick?: () => void;
 }
 
 type ConvictionTier = "high" | "medium" | "low";
@@ -71,7 +73,7 @@ const tierBadgeLabel: Record<ConvictionTier, string> = {
   low: "Low",
 };
 
-export function SignalCard({ signal, compact = false }: SignalCardProps) {
+export function SignalCard({ signal, compact = false, lockInsight = false, onUpgradeClick }: SignalCardProps) {
   const { locale, t } = useI18n();
   const isBullish = signal.action.toLowerCase() === 'buy' || signal.action.toLowerCase() === 'calls' || signal.action.toLowerCase() === 'bullish';
   const isBearish = signal.action.toLowerCase() === 'sell' || signal.action.toLowerCase() === 'puts' || signal.action.toLowerCase() === 'bearish';
@@ -149,16 +151,33 @@ export function SignalCard({ signal, compact = false }: SignalCardProps) {
       </p>
 
       {signal.aiInsight && (
-        <div className={cn("mb-4 p-3.5 rounded-xl border", tierInsightBox[tier])}>
+        <div className={cn("mb-4 p-3.5 rounded-xl border", lockInsight ? "bg-secondary/30 border-border/40" : tierInsightBox[tier])}>
           <div className="flex items-center gap-1.5 mb-2">
-            <Sparkles className={cn("w-3.5 h-3.5", tierInsightIcon[tier])} />
-            <span className={cn("text-[10px] font-bold uppercase tracking-wider", tierInsightIcon[tier])}>
-              AI Insight
+            <Sparkles className={cn("w-3.5 h-3.5", lockInsight ? "text-muted-foreground" : tierInsightIcon[tier])} />
+            <span className={cn("text-[10px] font-bold uppercase tracking-wider", lockInsight ? "text-muted-foreground" : tierInsightIcon[tier])}>
+              {t.signalCard.aiInsight}
             </span>
           </div>
-          <p className="text-sm leading-relaxed text-foreground/80 italic">
-            "{signal.aiInsight}"
-          </p>
+          {lockInsight ? (
+            <div className="relative">
+              <p className="text-sm leading-relaxed text-foreground/20 italic select-none blur-[5px]">
+                "{signal.aiInsight}"
+              </p>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button
+                  onClick={onUpgradeClick}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/15 border border-primary/25 text-primary text-xs font-bold hover:bg-primary/25 transition-colors"
+                >
+                  <Lock className="w-3 h-3" />
+                  {t.signalCard.upgradeToUnlock}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm leading-relaxed text-foreground/80 italic">
+              "{signal.aiInsight}"
+            </p>
+          )}
         </div>
       )}
 

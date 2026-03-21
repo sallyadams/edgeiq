@@ -3,19 +3,30 @@ import { motion } from "framer-motion";
 import { ArrowRight, BarChart2, ShieldAlert, Zap, Lock, Activity } from "lucide-react";
 import { useGetMarketStats, useGetTopSignals, useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
+import { FeaturedSignal } from "@/components/FeaturedSignal";
+import { LiveActivityTicker } from "@/components/LiveActivityTicker";
+import { UpgradeModal, useUnlocked } from "@/components/UpgradeModal";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
+
+const FREE_SIGNAL_LIMIT = 3;
 
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useGetMarketStats();
   const { data: topSignals, isLoading: topLoading } = useGetTopSignals();
   const { data: recentSignals, isLoading: recentLoading } = useGetSignals({ limit: 10 });
   const { t } = useI18n();
+  const { unlocked } = useUnlocked();
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
+
+  const featuredSignal = topSignals?.[0];
 
   return (
     <div className="space-y-8 pb-12">
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+
       <div className="relative rounded-3xl overflow-hidden border border-border/50 bg-card shadow-2xl">
         <div className="absolute inset-0 z-0">
           <img 
@@ -31,9 +42,10 @@ export default function Dashboard() {
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 tracking-tight">
               {t.dashboard.heroTitle} <span className="text-gradient">{t.dashboard.heroTitleHighlight}</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl">
+            <p className="text-lg text-muted-foreground max-w-2xl mb-3">
               {t.dashboard.heroDescription}
             </p>
+            <LiveActivityTicker />
           </div>
           <div className="flex flex-col items-end gap-2 bg-background/40 backdrop-blur-md p-4 rounded-2xl border border-border/50">
             <span className="text-sm font-medium text-muted-foreground">{t.dashboard.marketRegime}</span>
@@ -44,6 +56,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {featuredSignal && (
+        <FeaturedSignal
+          signal={featuredSignal}
+          unlocked={unlocked}
+          onUpgradeClick={() => setUpgradeOpen(true)}
+        />
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
@@ -85,16 +105,49 @@ export default function Dashboard() {
               [...Array(3)].map((_, i) => (
                 <div key={i} className="h-48 rounded-2xl bg-secondary/20 animate-pulse border border-border/30" />
               ))
-            ) : recentSignals?.map((signal, i) => (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                key={signal.id}
-              >
-                <SignalCard signal={signal} />
-              </motion.div>
-            ))}
+            ) : recentSignals?.map((signal, i) => {
+              const isLocked = !unlocked && i >= FREE_SIGNAL_LIMIT;
+              if (isLocked) return null;
+              return (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  key={signal.id}
+                >
+                  <SignalCard
+                    signal={signal}
+                    lockInsight={!unlocked}
+                    onUpgradeClick={() => setUpgradeOpen(true)}
+                  />
+                </motion.div>
+              );
+            })}
+
+            {!unlocked && !recentLoading && (recentSignals?.length ?? 0) > FREE_SIGNAL_LIMIT && (
+              <div className="relative">
+                <div className="space-y-4 pointer-events-none select-none">
+                  {recentSignals?.slice(FREE_SIGNAL_LIMIT, FREE_SIGNAL_LIMIT + 2).map((signal, i) => (
+                    <div
+                      key={signal.id}
+                      style={{ filter: `blur(${4 + i * 2}px)`, opacity: 0.4 - i * 0.1 }}
+                    >
+                      <SignalCard signal={signal} />
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
+                <div className="relative text-center py-6">
+                  <button
+                    onClick={() => setUpgradeOpen(true)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-[1.02]"
+                  >
+                    <Lock className="w-4 h-4" />
+                    {t.dashboard.unlockAllSignals}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -134,11 +187,17 @@ export default function Dashboard() {
               ))}
             </div>
             
-            <div className="mt-6 pt-4 border-t border-border/50 text-center">
-              <Button variant="outline" className="w-full text-xs uppercase tracking-widest font-bold">
-                <Lock className="w-3 h-3 mr-2" /> {t.dashboard.unlockTop50}
-              </Button>
-            </div>
+            {!unlocked && (
+              <div className="mt-6 pt-4 border-t border-border/50 text-center">
+                <Button
+                  variant="outline"
+                  className="w-full text-xs uppercase tracking-widest font-bold"
+                  onClick={() => setUpgradeOpen(true)}
+                >
+                  <Lock className="w-3 h-3 mr-2" /> {t.dashboard.unlockTop50}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

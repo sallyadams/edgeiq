@@ -1,32 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2, Star, CheckCircle2, X } from "lucide-react";
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
 import { useI18n } from "@/i18n";
-
-const UNLOCK_KEY = "edgeiq_unlocked";
-
-function useUnlocked() {
-  const [unlocked, setUnlocked] = useState(() =>
-    typeof window !== "undefined" && localStorage.getItem(UNLOCK_KEY) === "true"
-  );
-  const [justUpgraded, setJustUpgraded] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("upgraded") === "true") {
-      localStorage.setItem(UNLOCK_KEY, "true");
-      setUnlocked(true);
-      setJustUpgraded(true);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("upgraded");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, []);
-
-  return { unlocked, justUpgraded };
-}
+import { useUnlocked, UpgradeModal } from "@/components/UpgradeModal";
 
 type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
@@ -143,6 +121,7 @@ export default function Signals() {
   const [filterType, setFilterType] = useState<GetSignalsType>("all");
   const [search, setSearch] = useState("");
   const [bannerVisible, setBannerVisible] = useState(true);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const { unlocked, justUpgraded } = useUnlocked();
   const { t } = useI18n();
 
@@ -165,6 +144,7 @@ export default function Signals() {
 
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
 
       <AnimatePresence>
         {justUpgraded && bannerVisible && (
@@ -247,7 +227,11 @@ export default function Signals() {
                 transition={{ delay: i * 0.03 }}
                 key={signal.id}
               >
-                <SignalCard signal={signal} />
+                <SignalCard
+                  signal={signal}
+                  lockInsight={!unlocked}
+                  onUpgradeClick={() => setUpgradeOpen(true)}
+                />
               </motion.div>
             ))}
 
