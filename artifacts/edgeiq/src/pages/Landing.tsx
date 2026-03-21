@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check, Globe } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check, Globe, X as XIcon } from "lucide-react";
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
 import { useAuth } from "@workspace/replit-auth-web";
 
@@ -77,25 +77,28 @@ export default function Landing() {
     { value: "<500ms", label: t.landing.statsLatency },
   ];
 
-  type FreeTier = { kind: "free"; name: string; price: string; period: string; description: string; highlighted: false; cta: string; ctaHref: string; features: string[] };
-  type PaidTier = { kind: "paid"; name: string; price: string; period: string; description: string; highlighted: boolean; badge?: string; cta: string; plan: "pro" | "elite"; features: string[] };
+  type FreeTier = { kind: "free"; name: string; price: string; period: string; description: string; highlighted: false; cta: string; ctaHref: string; features: string[]; limitations: string[] };
+  type PaidTier = { kind: "paid"; name: string; price: string; period: string; description: string; highlighted: boolean; badge?: string; cta: string; plan: "pro" | "elite"; features: string[]; urgency: string };
   type PricingTier = FreeTier | PaidTier;
 
   const PRICING_TIERS: PricingTier[] = [
     {
-      kind: "free", name: t.landing.free, price: "€0", period: t.landing.forever, description: t.landing.freeDescription,
+      kind: "free", name: t.landing.free, price: "\u20ac0", period: t.landing.forever, description: t.landing.freeDescription,
       highlighted: false, cta: t.landing.startFree, ctaHref: "/dashboard",
       features: [t.landing.freeFeature1, t.landing.freeFeature2, t.landing.freeFeature3, t.landing.freeFeature4],
+      limitations: [t.landing.freeLimitation1, t.landing.freeLimitation2],
     },
     {
-      kind: "paid", name: t.landing.pro, price: "€19", period: t.landing.perMonth, description: t.landing.proDescription,
-      highlighted: true, badge: t.landing.mostPopular, cta: t.landing.getPro, plan: "pro",
+      kind: "paid", name: t.landing.pro, price: "\u20ac19", period: t.landing.perMonth, description: t.landing.proDescription,
+      highlighted: true, badge: t.landing.tradersBadge, cta: t.landing.getPro, plan: "pro",
       features: [t.landing.proFeature1, t.landing.proFeature2, t.landing.proFeature3, t.landing.proFeature4, t.landing.proFeature5],
+      urgency: t.landing.proUrgency,
     },
     {
-      kind: "paid", name: t.landing.elite, price: "€49", period: t.landing.perMonth, description: t.landing.eliteDescription,
+      kind: "paid", name: t.landing.elite, price: "\u20ac49", period: t.landing.perMonth, description: t.landing.eliteDescription,
       highlighted: false, cta: t.landing.getElite, plan: "elite",
       features: [t.landing.eliteFeature1, t.landing.eliteFeature2, t.landing.eliteFeature3, t.landing.eliteFeature4, t.landing.eliteFeature5, t.landing.eliteFeature6],
+      urgency: t.landing.eliteUrgency,
     },
   ];
 
@@ -118,7 +121,7 @@ export default function Landing() {
         }`}
       >
         {tier.highlighted && tier.kind === "paid" && tier.badge && (
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-wide">
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-wide whitespace-nowrap">
             {tier.badge}
           </div>
         )}
@@ -130,7 +133,7 @@ export default function Landing() {
             <span className="text-muted-foreground text-sm mb-1">{tier.period}</span>
           </div>
         </div>
-        <ul className="space-y-2.5 mb-8 flex-1">
+        <ul className="space-y-2.5 mb-4 flex-1">
           {tier.features.map((f) => (
             <li key={f} className="flex items-start gap-2.5 text-sm text-foreground">
               <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
@@ -138,17 +141,38 @@ export default function Landing() {
             </li>
           ))}
         </ul>
+
+        {tier.kind === "free" && tier.limitations.length > 0 && (
+          <ul className="space-y-2 mb-6">
+            {tier.limitations.map((lim) => (
+              <li key={lim} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                <XIcon className="w-4 h-4 text-destructive/60 mt-0.5 flex-shrink-0" />
+                {lim}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {tier.kind === "paid" && <div className="mb-6" />}
+
         {tier.kind === "paid" ? (
-          <button
-            onClick={handleCta}
-            disabled={loading}
-            className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none ${
-              tier.highlighted ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02]" : "border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary"
-            }`}
-          >
-            {loading ? t.signals.redirecting : tier.cta}
-            {!loading && <ArrowRight className="w-4 h-4" />}
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={handleCta}
+              disabled={loading}
+              className={`group/btn w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none ${
+                tier.highlighted
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:opacity-90 hover:scale-[1.02]"
+                  : "border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary hover:border-border"
+              }`}
+            >
+              {loading ? t.signals.redirecting : tier.cta}
+              {!loading && <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />}
+            </button>
+            <p className="text-center text-xs text-muted-foreground">
+              {tier.urgency}
+            </p>
+          </div>
         ) : (
           <Link
             href={tier.ctaHref}
@@ -349,7 +373,7 @@ export default function Landing() {
             ) : (
               <button
                 onClick={login}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/50 hover:opacity-90 transition-all hover:scale-105 duration-200"
               >
                 {t.landing.startFree}
                 <ArrowRight className="w-5 h-5" />
