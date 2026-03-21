@@ -192,7 +192,7 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   className="w-full text-xs uppercase tracking-widest font-bold"
-                  onClick={() => setUpgradeOpen(true)}
+                  onClick={() => { window.location.href = "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00"; }}
                 >
                   <Lock className="w-3 h-3 mr-2" /> {t.dashboard.unlockTop50}
                 </Button>
