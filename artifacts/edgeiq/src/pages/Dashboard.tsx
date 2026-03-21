@@ -47,10 +47,10 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: t.dashboard.fearGreedIndex, value: stats?.fearGreedIndex || "--", sub: stats?.overallSentiment, icon: Zap, color: "text-warning" },
+          { label: t.dashboard.fearGreedIndex, value: stats?.fearGreedIndex ?? "--", sub: stats?.overallSentiment ?? "--", icon: Zap, color: "text-warning" },
           { label: t.dashboard.insiderBuyRatio, value: stats ? `${stats.insiderBuyRatio.toFixed(2)}x` : "--", sub: t.dashboard.historicalAvg, icon: ShieldAlert, color: "text-primary" },
-          { label: t.dashboard.optionsFlowBias, value: stats?.optionsFlowBias || "--", sub: `${stats?.bullishSignals || 0} ${t.dashboard.bullish} / ${stats?.bearishSignals || 0} ${t.dashboard.bearish}`, icon: BarChart2, color: "text-success" },
-          { label: t.dashboard.totalSignalsToday, value: stats?.totalSignalsToday || "--", sub: t.dashboard.acrossAllSectors, icon: Activity, color: "text-accent" }
+          { label: t.dashboard.optionsFlowBias, value: stats?.optionsFlowBias ?? "--", sub: `${stats?.bullishSignals ?? 0} ${t.dashboard.bullish} / ${stats?.bearishSignals ?? 0} ${t.dashboard.bearish}`, icon: BarChart2, color: "text-success" },
+          { label: t.dashboard.totalSignalsToday, value: stats?.totalSignalsToday ?? "--", sub: t.dashboard.acrossAllSectors, icon: Activity, color: "text-accent" }
         ].map((stat, i) => (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

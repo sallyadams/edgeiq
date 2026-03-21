@@ -40,42 +40,52 @@ router.get("/market/quote/:ticker", async (req, res) => {
 
 router.get("/market/stats", async (_req, res) => {
   try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
     const rows = await db
       .select({
         total:          sql<number>`count(*)`,
-        bullish:        sql<number>`count(*) filter (where action in ('BUY','BULLISH'))`,
-        bearish:        sql<number>`count(*) filter (where action in ('SELL','BEARISH'))`,
+        totalToday:     sql<number>`count(*) filter (where ${signalsTable.reportedAt} >= ${todayStart})`,
+        bullish:        sql<number>`count(*) filter (where action in ('BUY','BULLISH','CALLS'))`,
+        bearish:        sql<number>`count(*) filter (where action in ('SELL','BEARISH','PUTS'))`,
         insiderBuys:    sql<number>`count(*) filter (where type = 'insider' and action = 'BUY')`,
         insiderSells:   sql<number>`count(*) filter (where type = 'insider' and action = 'SELL')`,
-        optionsBullish: sql<number>`count(*) filter (where type = 'options' and action in ('BUY','BULLISH'))`,
-        optionsBearish: sql<number>`count(*) filter (where type = 'options' and action in ('SELL','BEARISH'))`,
+        optionsBullish: sql<number>`count(*) filter (where type = 'options' and action in ('BUY','BULLISH','CALLS'))`,
+        optionsBearish: sql<number>`count(*) filter (where type = 'options' and action in ('SELL','BEARISH','PUTS'))`,
+        avgConviction:  sql<number>`coalesce(avg(conviction_score), 0)`,
       })
       .from(signalsTable);
 
     const r = rows[0];
     const total        = Number(r.total)          || 0;
-    const bullish      = Number(r.bullish)         || 0;
-    const bearish      = Number(r.bearish)         || 0;
-    const insiderBuys  = Number(r.insiderBuys)     || 0;
-    const insiderSells = Number(r.insiderSells)    || 0;
-    const optBull      = Number(r.optionsBullish)  || 0;
-    const optBear      = Number(r.optionsBearish)  || 0;
+    const totalToday   = Number(r.totalToday)     || 0;
+    const bullish      = Number(r.bullish)        || 0;
+    const bearish      = Number(r.bearish)        || 0;
+    const insiderBuys  = Number(r.insiderBuys)    || 0;
+    const insiderSells = Number(r.insiderSells)   || 0;
+    const optBull      = Number(r.optionsBullish) || 0;
+    const optBear      = Number(r.optionsBearish) || 0;
+    const avgConviction = Number(r.avgConviction) || 0;
 
     const insiderBuyRatio = insiderSells > 0
       ? Math.round((insiderBuys / insiderSells) * 100) / 100
       : insiderBuys > 0 ? insiderBuys : 0;
 
-    const optionsFlowBias = optBull >= optBear ? "BULLISH" : "BEARISH";
+    const optionsFlowBias = optBull > optBear ? "BULLISH" : optBear > optBull ? "BEARISH" : "NEUTRAL";
     const overallSentiment = bullish > bearish ? "BULLISH" : bullish < bearish ? "BEARISH" : "NEUTRAL";
+
+    const bullishRatio = total > 0 ? bullish / total : 0.5;
+    const fearGreedIndex = Math.round(bullishRatio * 60 + (avgConviction / 100) * 40);
 
     res.json({
       overallSentiment,
-      fearGreedIndex: 58,
+      fearGreedIndex,
       insiderBuyRatio,
       optionsFlowBias,
-      totalSignalsToday: total,
-      bullishSignals: optBull,
-      bearishSignals: optBear,
+      totalSignalsToday: totalToday > 0 ? totalToday : total,
+      bullishSignals: bullish,
+      bearishSignals: bearish,
       topSectors: [
         { name: "Technology", score: 82 },
         { name: "Energy",     score: 71 },
