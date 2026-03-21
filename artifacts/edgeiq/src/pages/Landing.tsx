@@ -150,11 +150,7 @@ export default function Landing() {
             <button
               onClick={handleCta}
               disabled={loading}
-              className={`group/btn w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none ${
-                tier.highlighted
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:opacity-90 hover:scale-[1.02]"
-                  : "border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary hover:border-border"
-              }`}
+              className="group/btn w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:opacity-90 hover:scale-[1.02]"
             >
               {loading ? t.signals.redirecting : tier.cta}
               {!loading && <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />}
