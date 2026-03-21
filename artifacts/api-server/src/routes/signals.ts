@@ -5,6 +5,27 @@ import { eq, desc, and } from "drizzle-orm";
 
 const router: IRouter = Router();
 
+function mapSignal(s: typeof signalsTable.$inferSelect) {
+  return {
+    id: s.id,
+    ticker: s.ticker,
+    type: s.type,
+    action: s.action,
+    description: s.description,
+    convictionScore: s.convictionScore,
+    winRate: s.winRate,
+    valueUsd: s.valueUsd,
+    filerName: s.filerName,
+    expiryDate: s.expiryDate,
+    strikePrice: s.strikePrice,
+    optionType: s.optionType,
+    sentiment: s.sentiment,
+    aiInsight: s.aiInsight,
+    source: s.source,
+    reportedAt: s.reportedAt,
+  };
+}
+
 router.get("/signals", async (req, res) => {
   try {
     const { type, ticker, limit } = req.query as { type?: string; ticker?: string; limit?: string };
@@ -25,23 +46,7 @@ router.get("/signals", async (req, res) => {
       .orderBy(desc(signalsTable.reportedAt))
       .limit(limitNum);
 
-    res.json(signals.map(s => ({
-      id: s.id,
-      ticker: s.ticker,
-      type: s.type,
-      action: s.action,
-      description: s.description,
-      convictionScore: s.convictionScore,
-      winRate: s.winRate,
-      valueUsd: s.valueUsd,
-      filerName: s.filerName,
-      expiryDate: s.expiryDate,
-      strikePrice: s.strikePrice,
-      optionType: s.optionType,
-      sentiment: s.sentiment,
-      source: s.source,
-      reportedAt: s.reportedAt,
-    })));
+    res.json(signals.map(mapSignal));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch signals" });
@@ -56,23 +61,7 @@ router.get("/signals/top", async (_req, res) => {
       .orderBy(desc(signalsTable.convictionScore))
       .limit(10);
 
-    res.json(signals.map(s => ({
-      id: s.id,
-      ticker: s.ticker,
-      type: s.type,
-      action: s.action,
-      description: s.description,
-      convictionScore: s.convictionScore,
-      winRate: s.winRate,
-      valueUsd: s.valueUsd,
-      filerName: s.filerName,
-      expiryDate: s.expiryDate,
-      strikePrice: s.strikePrice,
-      optionType: s.optionType,
-      sentiment: s.sentiment,
-      source: s.source,
-      reportedAt: s.reportedAt,
-    })));
+    res.json(signals.map(mapSignal));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch top signals" });
@@ -89,23 +78,7 @@ router.get("/signals/:ticker/history", async (req, res) => {
       .orderBy(desc(signalsTable.reportedAt))
       .limit(100);
 
-    res.json(signals.map(s => ({
-      id: s.id,
-      ticker: s.ticker,
-      type: s.type,
-      action: s.action,
-      description: s.description,
-      convictionScore: s.convictionScore,
-      winRate: s.winRate,
-      valueUsd: s.valueUsd,
-      filerName: s.filerName,
-      expiryDate: s.expiryDate,
-      strikePrice: s.strikePrice,
-      optionType: s.optionType,
-      sentiment: s.sentiment,
-      source: s.source,
-      reportedAt: s.reportedAt,
-    })));
+    res.json(signals.map(mapSignal));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch signal history" });

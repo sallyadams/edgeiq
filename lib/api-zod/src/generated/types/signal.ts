@@ -22,5 +22,6 @@ export interface Signal {
   strikePrice?: number;
   optionType?: string;
   sentiment?: string;
+  aiInsight?: string;
   source?: string;
 }

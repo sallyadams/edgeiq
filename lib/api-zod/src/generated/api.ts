@@ -38,6 +38,7 @@ export const GetSignalsResponseItem = zod.object({
   strikePrice: zod.number().optional(),
   optionType: zod.string().optional(),
   sentiment: zod.string().optional(),
+  aiInsight: zod.string().optional(),
   source: zod.string().optional(),
 });
 export const GetSignalsResponse = zod.array(GetSignalsResponseItem);
@@ -60,6 +61,7 @@ export const GetTopSignalsResponseItem = zod.object({
   strikePrice: zod.number().optional(),
   optionType: zod.string().optional(),
   sentiment: zod.string().optional(),
+  aiInsight: zod.string().optional(),
   source: zod.string().optional(),
 });
 export const GetTopSignalsResponse = zod.array(GetTopSignalsResponseItem);
@@ -86,6 +88,7 @@ export const GetTickerSignalHistoryResponseItem = zod.object({
   strikePrice: zod.number().optional(),
   optionType: zod.string().optional(),
   sentiment: zod.string().optional(),
+  aiInsight: zod.string().optional(),
   source: zod.string().optional(),
 });
 export const GetTickerSignalHistoryResponse = zod.array(

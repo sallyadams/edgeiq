@@ -104,7 +104,9 @@ React + Vite frontend for the EdgeIQ market intelligence platform.
 - **Pages**: Landing, Dashboard, Signals (with paywall), Watchlist, TickerDetail, NotFound — all fully translated.
 - **Auth**: Uses `@workspace/replit-auth-web` `useAuth()` hook. Sign-in/out in sidebar + header.
 - **Stripe**: €9/month early access checkout via `/api/checkout/create-session`. Unlock state in `localStorage` key `edgeiq_unlocked`.
-- **Signals**: 20 demo signals seeded, FREE_SIGNAL_LIMIT = 2, blurred paywall for locked signals.
+- **Signals**: 20 demo signals seeded, FREE_SIGNAL_LIMIT = 3, blurred paywall for locked signals.
+- **AI Insights**: Each signal includes an `aiInsight` field with institutional-grade analysis explaining the signal's significance. Displayed in a styled box with sparkle icon on the SignalCard.
+- **High Conviction Badge**: Signals with `convictionScore >= 85` show a "HIGH CONVICTION" flame badge, primary-colored top border glow, and percentage next to the action badge.
 - **date-fns locales**: Signal timestamps use locale-aware `formatDistanceToNow`.
 
 ### `lib/replit-auth-web` (`@workspace/replit-auth-web`)

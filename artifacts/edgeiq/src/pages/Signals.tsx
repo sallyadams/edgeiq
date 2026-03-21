@@ -30,7 +30,7 @@ function useUnlocked() {
 
 type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
-const FREE_SIGNAL_LIMIT = 2;
+const FREE_SIGNAL_LIMIT = 3;
 
 async function startCheckout(plan: "early" | "pro" | "elite") {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");

@@ -223,6 +223,8 @@ components:
           type: string
         sentiment:
           type: string
+        aiInsight:
+          type: string
         source:
           type: string
       required:

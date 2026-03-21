@@ -16,6 +16,7 @@ export const signalsTable = pgTable("signals", {
   strikePrice: real("strike_price"),
   optionType: text("option_type"),
   sentiment: text("sentiment"),
+  aiInsight: text("ai_insight"),
   source: text("source"),
   reportedAt: timestamp("reported_at").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
