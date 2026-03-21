@@ -23,5 +23,13 @@ export const usersTable = pgTable("users", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
+export const oidcStateTable = pgTable("oidc_state", {
+  state: varchar("state").primaryKey(),
+  codeVerifier: varchar("code_verifier").notNull(),
+  nonce: varchar("nonce").notNull(),
+  returnTo: varchar("return_to").notNull().default("/"),
+  expire: timestamp("expire").notNull(),
+});
+
 export type UpsertUser = typeof usersTable.$inferInsert;
 export type User = typeof usersTable.$inferSelect;

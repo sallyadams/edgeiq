@@ -1,6 +1,7 @@
 import * as oidc from "openid-client";
 import { Router, type IRouter, type Request, type Response } from "express";
-import { db, usersTable } from "@workspace/db";
+import { db, usersTable, oidcStateTable } from "@workspace/db";
+import { eq, lt } from "drizzle-orm";
 import {
   clearSession,
   getOidcConfig,
@@ -11,7 +12,7 @@ import {
   type SessionData,
 } from "../lib/auth";
 
-const OIDC_COOKIE_TTL = 10 * 60 * 1000;
+const OIDC_STATE_TTL = 10 * 60 * 1000;
 
 const router: IRouter = Router();
 
@@ -29,16 +30,6 @@ function setSessionCookie(res: Response, sid: string) {
     sameSite: "lax",
     path: "/",
     maxAge: SESSION_TTL,
-  });
-}
-
-function setOidcCookie(res: Response, name: string, value: string) {
-  res.cookie(name, value, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: OIDC_COOKIE_TTL,
   });
 }
 
@@ -89,6 +80,16 @@ router.get("/login", async (req: Request, res: Response) => {
     const codeVerifier = oidc.randomPKCECodeVerifier();
     const codeChallenge = await oidc.calculatePKCECodeChallenge(codeVerifier);
 
+    await db.delete(oidcStateTable).where(lt(oidcStateTable.expire, new Date()));
+
+    await db.insert(oidcStateTable).values({
+      state,
+      codeVerifier,
+      nonce,
+      returnTo,
+      expire: new Date(Date.now() + OIDC_STATE_TTL),
+    });
+
     const redirectTo = oidc.buildAuthorizationUrl(config, {
       redirect_uri: callbackUrl,
       scope: "openid email profile offline_access",
@@ -99,11 +100,6 @@ router.get("/login", async (req: Request, res: Response) => {
       nonce,
     });
 
-    setOidcCookie(res, "code_verifier", codeVerifier);
-    setOidcCookie(res, "nonce", nonce);
-    setOidcCookie(res, "state", state);
-    setOidcCookie(res, "return_to", returnTo);
-
     res.redirect(redirectTo.href);
   } catch (err) {
     console.error("Login error:", err);
@@ -112,49 +108,60 @@ router.get("/login", async (req: Request, res: Response) => {
 });
 
 router.get("/callback", async (req: Request, res: Response) => {
+  const config = await getOidcConfig();
+  const callbackUrl = `${getOrigin(req)}/api/callback`;
+
+  const incomingState = req.query.state as string | undefined;
+  if (!incomingState) {
+    console.error("Auth callback: no state parameter in callback URL");
+    res.redirect("/api/login");
+    return;
+  }
+
+  const [oidcRow] = await db
+    .select()
+    .from(oidcStateTable)
+    .where(eq(oidcStateTable.state, incomingState));
+
+  if (!oidcRow || oidcRow.expire < new Date()) {
+    console.error("Auth callback: OIDC state not found or expired");
+    if (oidcRow) {
+      await db.delete(oidcStateTable).where(eq(oidcStateTable.state, incomingState));
+    }
+    res.redirect("/api/login");
+    return;
+  }
+
+  await db.delete(oidcStateTable).where(eq(oidcStateTable.state, incomingState));
+
+  const currentUrl = new URL(
+    `${callbackUrl}?${new URL(req.url, `http://${req.headers.host}`).searchParams}`,
+  );
+
+  let tokens: oidc.TokenEndpointResponse & oidc.TokenEndpointResponseHelpers;
   try {
-    const config = await getOidcConfig();
-    const callbackUrl = `${getOrigin(req)}/api/callback`;
+    tokens = await oidc.authorizationCodeGrant(config, currentUrl, {
+      pkceCodeVerifier: oidcRow.codeVerifier,
+      expectedNonce: oidcRow.nonce,
+      expectedState: oidcRow.state,
+      idTokenExpected: true,
+    });
+  } catch (err) {
+    console.error("Auth callback: token exchange failed:", err);
+    res.redirect("/api/login");
+    return;
+  }
 
-    const codeVerifier = req.cookies?.code_verifier;
-    const expectedState = req.cookies?.state;
-    const nonce = req.cookies?.nonce;
+  const returnTo = getSafeReturnTo(oidcRow.returnTo);
 
-    if (!codeVerifier || !expectedState) {
-      res.redirect("/api/login");
-      return;
-    }
+  const claims = tokens.claims();
+  if (!claims) {
+    console.error("Auth callback: no claims in ID token");
+    res.redirect("/api/login");
+    return;
+  }
 
-    const currentUrl = new URL(
-      `${callbackUrl}?${new URL(req.url, `http://${req.headers.host}`).searchParams}`,
-    );
-
-    let tokens: oidc.TokenEndpointResponse & oidc.TokenEndpointResponseHelpers;
-    try {
-      tokens = await oidc.authorizationCodeGrant(config, currentUrl, {
-        pkceCodeVerifier: codeVerifier,
-        expectedNonce: nonce,
-        expectedState,
-        idTokenExpected: true,
-      });
-    } catch {
-      res.redirect("/api/login");
-      return;
-    }
-
-    const returnTo = getSafeReturnTo(req.cookies?.return_to);
-
-    res.clearCookie("code_verifier", { path: "/" });
-    res.clearCookie("nonce", { path: "/" });
-    res.clearCookie("state", { path: "/" });
-    res.clearCookie("return_to", { path: "/" });
-
-    const claims = tokens.claims();
-    if (!claims) {
-      res.redirect("/api/login");
-      return;
-    }
-
+  try {
     const dbUser = await upsertUser(claims as unknown as Record<string, unknown>);
 
     const now = Math.floor(Date.now() / 1000);
@@ -175,8 +182,8 @@ router.get("/callback", async (req: Request, res: Response) => {
     setSessionCookie(res, sid);
     res.redirect(returnTo);
   } catch (err) {
-    console.error("Auth callback error:", err);
-    res.redirect("/");
+    console.error("Auth callback: session/user creation failed:", err);
+    res.redirect("/api/login");
   }
 });
 

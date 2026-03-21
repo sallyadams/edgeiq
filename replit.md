@@ -58,8 +58,10 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
 - Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
 - Authentication: Replit Auth (OpenID Connect with PKCE) via `openid-client`, session cookies, DB-backed sessions
+- OIDC handshake state (code_verifier, nonce, state, returnTo) is stored server-side in `oidc_state` table (not cookies) to avoid third-party cookie issues in iframe contexts
 - Auth routes: `/api/login`, `/api/callback`, `/api/logout`, `/api/auth/user`
 - Auth middleware in `src/middlewares/authMiddleware.ts` populates `req.user` / `req.isAuthenticated()`
+- CORS: `cors({ credentials: true, origin: true })` — reflects any origin for cookie-based auth through Replit proxy
 - Depends on: `@workspace/db`, `@workspace/api-zod`
 - `pnpm --filter @workspace/api-server run dev` — run the dev server
 - `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
