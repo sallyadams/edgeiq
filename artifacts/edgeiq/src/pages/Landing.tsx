@@ -10,11 +10,21 @@ async function startCheckout(plan: "pro" | "elite") {
   const res = await fetch(`${base}/api/checkout/create-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ plan }),
   });
-  if (!res.ok) throw new Error("Failed to create checkout session");
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "Unknown error");
+    console.error("[checkout] API error:", res.status, errText);
+    throw new Error(`Checkout failed: ${res.status}`);
+  }
   const { url } = await res.json();
-  if (url) window.location.href = url;
+  if (url) {
+    window.location.href = url;
+  } else {
+    console.error("[checkout] No URL returned from Stripe");
+    throw new Error("No checkout URL");
+  }
 }
 
 function LanguageSwitcher() {

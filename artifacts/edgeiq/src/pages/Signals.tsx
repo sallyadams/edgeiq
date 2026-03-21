@@ -10,16 +10,26 @@ type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
 const FREE_SIGNAL_LIMIT = 3;
 
-async function startCheckout(plan: "early" | "pro" | "elite") {
+async function startCheckout(plan: "pro" | "elite") {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   const res = await fetch(`${base}/api/checkout/create-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ plan }),
   });
-  if (!res.ok) throw new Error("Failed to create checkout session");
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "Unknown error");
+    console.error("[checkout] API error:", res.status, errText);
+    throw new Error(`Checkout failed: ${res.status}`);
+  }
   const { url } = await res.json();
-  if (url) window.location.href = url;
+  if (url) {
+    window.location.href = url;
+  } else {
+    console.error("[checkout] No URL returned from Stripe");
+    throw new Error("No checkout URL");
+  }
 }
 
 function PremiumPaywall() {
@@ -31,7 +41,7 @@ function PremiumPaywall() {
     setLoading(true);
     setError(null);
     try {
-      await startCheckout("early");
+      await startCheckout("pro");
     } catch {
       setError(t.signals.somethingWentWrong);
       setLoading(false);

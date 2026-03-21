@@ -10,11 +10,21 @@ async function startCheckout(plan: "pro" | "elite") {
   const res = await fetch(`${base}/api/checkout/create-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ plan }),
   });
-  if (!res.ok) throw new Error("Failed to create checkout session");
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "Unknown error");
+    console.error("[checkout] API error:", res.status, errText);
+    throw new Error(`Checkout failed: ${res.status}`);
+  }
   const { url } = await res.json();
-  if (url) window.location.href = url;
+  if (url) {
+    window.location.href = url;
+  } else {
+    console.error("[checkout] No URL returned from Stripe");
+    throw new Error("No checkout URL");
+  }
 }
 
 export function useUnlocked() {
@@ -45,13 +55,16 @@ interface UpgradeModalProps {
 
 export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const { t } = useI18n();
 
   async function handleUpgrade() {
     setLoading(true);
+    setError(null);
     try {
       await startCheckout("pro");
-    } catch {
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong");
       setLoading(false);
     }
   }
@@ -112,6 +125,10 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
                   </li>
                 ))}
               </ul>
+
+              {error && (
+                <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-2 mb-4">{error}</p>
+              )}
 
               <button
                 onClick={handleUpgrade}
