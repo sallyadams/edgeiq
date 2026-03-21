@@ -5,7 +5,7 @@ import { useGetMarketStats, useGetTopSignals, useGetSignals } from "@workspace/a
 import { SignalCard } from "@/components/SignalCard";
 import { FeaturedSignal } from "@/components/FeaturedSignal";
 import { LiveActivityTicker } from "@/components/LiveActivityTicker";
-import { UpgradeModal, useUnlocked } from "@/components/UpgradeModal";
+import { useUnlocked, goToStripeCheckout } from "@/components/UpgradeModal";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,10 @@ export default function Dashboard() {
   const { data: recentSignals, isLoading: recentLoading } = useGetSignals({ limit: 10 });
   const { t } = useI18n();
   const { unlocked } = useUnlocked();
-  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
-
   const featuredSignal = topSignals?.[0];
 
   return (
     <div className="space-y-8 pb-12">
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
 
       <div className="relative rounded-3xl overflow-hidden border border-border/50 bg-card shadow-2xl">
         <div className="absolute inset-0 z-0">
@@ -61,7 +58,7 @@ export default function Dashboard() {
         <FeaturedSignal
           signal={featuredSignal}
           unlocked={unlocked}
-          onUpgradeClick={() => setUpgradeOpen(true)}
+          onUpgradeClick={goToStripeCheckout}
         />
       )}
 
@@ -118,7 +115,7 @@ export default function Dashboard() {
                   <SignalCard
                     signal={signal}
                     lockInsight={!unlocked}
-                    onUpgradeClick={() => setUpgradeOpen(true)}
+                    onUpgradeClick={goToStripeCheckout}
                   />
                 </motion.div>
               );
@@ -139,7 +136,7 @@ export default function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
                 <div className="relative text-center py-6">
                   <button
-                    onClick={() => setUpgradeOpen(true)}
+                    onClick={goToStripeCheckout}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-[1.02]"
                   >
                     <Lock className="w-4 h-4" />

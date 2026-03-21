@@ -5,15 +5,7 @@ import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check, G
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
 import { useAuth } from "@workspace/replit-auth-web";
 
-const STRIPE_PAYMENT_LINKS: Record<string, string> = {
-  pro: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
-  elite: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
-};
-
-function startCheckout(plan: "pro" | "elite") {
-  const url = STRIPE_PAYMENT_LINKS[plan];
-  window.location.href = url;
-}
+import { goToStripeCheckout } from "@/components/UpgradeModal";
 
 function LanguageSwitcher() {
   const { locale, setLocale } = useI18n();
@@ -106,7 +98,7 @@ export default function Landing() {
     async function handleCta() {
       if (tier.kind !== "paid") return;
       setLoading(true);
-      try { await startCheckout(tier.plan); } catch { setLoading(false); }
+      goToStripeCheckout();
     }
 
     return (

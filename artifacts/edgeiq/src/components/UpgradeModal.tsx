@@ -5,14 +5,10 @@ import { useI18n } from "@/i18n";
 
 const UNLOCK_KEY = "edgeiq_unlocked";
 
-const STRIPE_PAYMENT_LINKS: Record<string, string> = {
-  pro: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
-  elite: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
-};
+export const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00";
 
-function startCheckout(plan: "pro" | "elite") {
-  const url = STRIPE_PAYMENT_LINKS[plan];
-  window.location.href = url;
+export function goToStripeCheckout() {
+  window.location.href = STRIPE_CHECKOUT_URL;
 }
 
 export function useUnlocked() {
@@ -46,15 +42,9 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
   const [error, setError] = React.useState<string | null>(null);
   const { t } = useI18n();
 
-  async function handleUpgrade() {
+  function handleUpgrade() {
     setLoading(true);
-    setError(null);
-    try {
-      await startCheckout("pro");
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong");
-      setLoading(false);
-    }
+    goToStripeCheckout();
   }
 
   return (

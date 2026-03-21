@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@workspace/replit-auth-web";
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
-import { useUnlocked, UpgradeModal } from "./UpgradeModal";
+import { useUnlocked, goToStripeCheckout } from "./UpgradeModal";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -14,7 +14,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { locale, setLocale, t } = useI18n();
   const { unlocked } = useUnlocked();
-  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
 
   const NAV_ITEMS = [
     { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
@@ -41,7 +40,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground overflow-hidden">
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
       <aside className="hidden md:flex w-64 flex-col border-r border-border/50 bg-card/30 backdrop-blur-xl relative z-20">
         <div className="h-16 flex items-center px-6 border-b border-border/50">
           <img 
@@ -84,7 +82,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="p-4 space-y-3 border-t border-border/50">
           {!unlocked && (
             <button
-              onClick={() => setUpgradeOpen(true)}
+              onClick={goToStripeCheckout}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
             >
               <Lock className="w-4 h-4" />

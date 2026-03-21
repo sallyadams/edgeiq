@@ -4,21 +4,12 @@ import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRi
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
 import { useI18n } from "@/i18n";
-import { useUnlocked, UpgradeModal } from "@/components/UpgradeModal";
+import { useUnlocked, goToStripeCheckout } from "@/components/UpgradeModal";
 
 type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
 const FREE_SIGNAL_LIMIT = 3;
 
-const STRIPE_PAYMENT_LINKS: Record<string, string> = {
-  pro: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
-  elite: "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00",
-};
-
-function startCheckout(plan: "pro" | "elite") {
-  const url = STRIPE_PAYMENT_LINKS[plan];
-  window.location.href = url;
-}
 
 function PremiumPaywall() {
   const [loading, setLoading] = useState(false);
@@ -29,7 +20,7 @@ function PremiumPaywall() {
     setLoading(true);
     setError(null);
     try {
-      await startCheckout("pro");
+      goToStripeCheckout();
     } catch {
       setError(t.signals.somethingWentWrong);
       setLoading(false);
@@ -119,7 +110,6 @@ export default function Signals() {
   const [filterType, setFilterType] = useState<GetSignalsType>("all");
   const [search, setSearch] = useState("");
   const [bannerVisible, setBannerVisible] = useState(true);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const { unlocked, justUpgraded } = useUnlocked();
   const { t } = useI18n();
 
@@ -142,8 +132,6 @@ export default function Signals() {
 
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
-
       <AnimatePresence>
         {justUpgraded && bannerVisible && (
           <motion.div
@@ -228,7 +216,7 @@ export default function Signals() {
                 <SignalCard
                   signal={signal}
                   lockInsight={!unlocked}
-                  onUpgradeClick={() => setUpgradeOpen(true)}
+                  onUpgradeClick={goToStripeCheckout}
                 />
               </motion.div>
             ))}
