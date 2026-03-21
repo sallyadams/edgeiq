@@ -5,10 +5,11 @@ import { useI18n } from "@/i18n";
 
 const UNLOCK_KEY = "edgeiq_unlocked";
 
-export const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00";
-
 export function goToStripeCheckout() {
-  window.location.href = STRIPE_CHECKOUT_URL;
+  const origin = window.location.origin;
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const successUrl = encodeURIComponent(`${origin}${basePath}/signals?upgraded=true`);
+  window.location.href = `https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00?success_url=${successUrl}`;
 }
 
 export function useUnlocked() {
