@@ -54,7 +54,7 @@ router.post("/watchlist", async (req, res) => {
     return res.status(201).json({ ...item, latestSignalScore: null });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to add to watchlist" });
+    return res.status(500).json({ error: "Failed to add to watchlist" });
   }
 });
 

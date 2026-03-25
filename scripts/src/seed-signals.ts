@@ -56,7 +56,7 @@ async function seed() {
     description: s.description,
     convictionScore: s.convictionScore,
     winRate: s.winRate,
-    valueUsd: s.valueUsd ?? null,
+    valueUsd: (s as any).valueUsd ?? null,
     filerName: (s as any).filerName ?? null,
     expiryDate: (s as any).expiryDate ?? null,
     strikePrice: (s as any).strikePrice ?? null,
