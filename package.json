@@ -15,5 +15,11 @@
   },
   "dependencies": {
     "@replit/connectors-sdk": "^0.3.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "picomatch@2": "2.3.2",
+      "picomatch@4": "4.0.4"
+    }
   }
 }
