@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Layout } from "@/components/Layout";
 import { I18nProvider } from "@/i18n";
+import { useAuth } from "@workspace/replit-auth-web";
 
 // Pages
 import Landing from "@/pages/Landing";
@@ -23,29 +24,67 @@ const queryClient = new QueryClient({
   },
 });
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading, login } = useAuth();
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+            <p className="mt-4 text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!isAuthenticated) {
+    login();
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">Redirecting to login...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/dashboard">
-        <Layout>
-          <Dashboard />
-        </Layout>
+        <ProtectedRoute>
+          <Layout>
+            <Dashboard />
+          </Layout>
+        </ProtectedRoute>
       </Route>
       <Route path="/signals">
-        <Layout>
-          <Signals />
-        </Layout>
+        <ProtectedRoute>
+          <Layout>
+            <Signals />
+          </Layout>
+        </ProtectedRoute>
       </Route>
       <Route path="/watchlist">
-        <Layout>
-          <Watchlist />
-        </Layout>
+        <ProtectedRoute>
+          <Layout>
+            <Watchlist />
+          </Layout>
+        </ProtectedRoute>
       </Route>
       <Route path="/ticker/:symbol">
-        <Layout>
-          <TickerDetail />
-        </Layout>
+        <ProtectedRoute>
+          <Layout>
+            <TickerDetail />
+          </Layout>
+        </ProtectedRoute>
       </Route>
       <Route component={NotFound} />
     </Switch>
