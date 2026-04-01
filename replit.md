@@ -73,7 +73,8 @@ Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client insta
 
 - `src/index.ts` — creates a `Pool` + Drizzle instance, exports schema
 - `src/schema/index.ts` — barrel re-export of all models
-- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas (no models definitions exist right now)
+- `src/schema/auth.ts` — `usersTable` (with `tier` column for pro status), `sessionsTable`, `oidcStateTable`
+- `src/schema/signals.ts` — `signalsTable`, `watchlistTable` (per-user with `userId` FK and composite unique on `userId+ticker`)
 - `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
 - Exports: `.` (pool, db, schema), `./schema` (schema only)
 
@@ -103,12 +104,12 @@ React + Vite frontend for the EdgeIQ market intelligence platform.
 - **Multi-language (i18n)**: 5 languages (EN, FR, DE, ES, NL) via custom React context (`src/i18n/`). `useI18n()` hook provides `{ locale, setLocale, t }`. Language persisted in `localStorage` key `edgeiq_locale`, auto-detects browser language. Language switcher in sidebar (desktop) and mobile menu.
 - **Pages**: Landing, Dashboard, Signals (with paywall), Watchlist, TickerDetail, NotFound — all fully translated.
 - **Auth**: Uses `@workspace/replit-auth-web` `useAuth()` hook. Sign-in/out in sidebar + header.
-- **Stripe**: €19/month Pro and €49/month Elite checkout via `/api/checkout/create-session`. Unlock state in `localStorage` key `edgeiq_unlocked`.
+- **Stripe**: €9/month Early, €19/month Pro, and €49/month Elite checkout via `/api/checkout/create-session`. Pro status persisted in `users.tier` DB column (updated by Stripe webhook on `checkout.session.completed`). Frontend checks `user.tier` from `/api/auth/user`.
 - **Signals**: 20 demo signals seeded, FREE_SIGNAL_LIMIT = 3, blurred paywall for locked signals.
 - **AI Insights**: Each signal includes an `aiInsight` field with institutional-grade analysis explaining the signal's significance. Displayed in a styled box with sparkle icon on the SignalCard. Free users see blurred AI insights with "Upgrade to unlock" button overlay.
 - **High Conviction Badge**: Signals with `convictionScore >= 85` show a "HIGH CONVICTION" flame badge, primary-colored top border glow, and percentage next to the action badge.
 - **Activation Flow Components**:
-  - `UpgradeModal.tsx` — Triggered from locked content, shows feature list + Stripe checkout. Exports `useUnlocked()` hook (shared across pages).
+  - `UpgradeModal.tsx` — Triggered from locked content, shows feature list + calls backend `/api/checkout/create-session` to create Stripe checkout.
   - `FeaturedSignal.tsx` — Prominent high-conviction signal card at top of Dashboard with conviction score ring, AI insight (locked/unlocked), and "View Full Analysis" CTA.
   - `LiveActivityTicker.tsx` — Animated ticker showing "+N signals detected in the last hour" and "N traders upgraded recently" with randomized realistic counts.
   - `SignalCard.tsx` — Accepts `lockInsight` and `onUpgradeClick` props to blur AI insights for free users with an upgrade button overlay.
@@ -119,7 +120,7 @@ React + Vite frontend for the EdgeIQ market intelligence platform.
 
 ### `lib/replit-auth-web` (`@workspace/replit-auth-web`)
 
-Browser-side auth hook for React. Exports `useAuth()` which returns `{ user, isLoading, isAuthenticated, login, logout }`. Fetches `/api/auth/user` with credentials. No external dependencies beyond React.
+Browser-side auth hook for React. Exports `useAuth()` which returns `{ user, isLoading, isAuthenticated, login, logout }`. The `user` object includes `tier` field (from DB). Fetches `/api/auth/user` with credentials. No external dependencies beyond React.
 
 ### `scripts` (`@workspace/scripts`)
 

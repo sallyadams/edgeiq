@@ -5,7 +5,8 @@ import { useGetMarketStats, useGetTopSignals, useGetSignals } from "@workspace/a
 import { SignalCard } from "@/components/SignalCard";
 import { FeaturedSignal } from "@/components/FeaturedSignal";
 import { LiveActivityTicker } from "@/components/LiveActivityTicker";
-import { useUnlocked, goToStripeCheckout } from "@/components/UpgradeModal";
+import { UpgradeModal } from "@/components/UpgradeModal";
+import { useAuth } from "@workspace/replit-auth-web";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,8 +19,19 @@ export default function Dashboard() {
   const { data: topSignals, isLoading: topLoading } = useGetTopSignals();
   const { data: recentSignals, isLoading: recentLoading } = useGetSignals({ limit: 10 });
   const { t } = useI18n();
-  const { unlocked } = useUnlocked();
+  const { user } = useAuth();
+  const isPro = user?.tier === "pro" || user?.tier === "elite";
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
   const featuredSignal = topSignals?.[0];
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upgraded") === "true") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("upgraded");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
 
   return (
     <div className="space-y-8 pb-12">
@@ -57,8 +69,8 @@ export default function Dashboard() {
       {featuredSignal && (
         <FeaturedSignal
           signal={featuredSignal}
-          unlocked={unlocked}
-          onUpgradeClick={goToStripeCheckout}
+          unlocked={isPro}
+          onUpgradeClick={() => setUpgradeOpen(true)}
         />
       )}
 
@@ -103,7 +115,7 @@ export default function Dashboard() {
                 <div key={i} className="h-48 rounded-2xl bg-secondary/20 animate-pulse border border-border/30" />
               ))
             ) : recentSignals?.map((signal, i) => {
-              const isLocked = !unlocked && i >= FREE_SIGNAL_LIMIT;
+              const isLocked = !isPro && i >= FREE_SIGNAL_LIMIT;
               if (isLocked) return null;
               return (
                 <motion.div
@@ -114,14 +126,14 @@ export default function Dashboard() {
                 >
                   <SignalCard
                     signal={signal}
-                    lockInsight={!unlocked}
-                    onUpgradeClick={goToStripeCheckout}
+                    lockInsight={!isPro}
+                    onUpgradeClick={() => setUpgradeOpen(true)}
                   />
                 </motion.div>
               );
             })}
 
-            {!unlocked && !recentLoading && (recentSignals?.length ?? 0) > FREE_SIGNAL_LIMIT && (
+            {!isPro && !recentLoading && (recentSignals?.length ?? 0) > FREE_SIGNAL_LIMIT && (
               <div className="relative">
                 <div className="space-y-4 pointer-events-none select-none">
                   {recentSignals?.slice(FREE_SIGNAL_LIMIT, FREE_SIGNAL_LIMIT + 2).map((signal, i) => (
@@ -136,7 +148,7 @@ export default function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
                 <div className="relative text-center py-6">
                   <button
-                    onClick={goToStripeCheckout}
+                    onClick={() => setUpgradeOpen(true)}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-[1.02]"
                   >
                     <Lock className="w-4 h-4" />
@@ -184,12 +196,12 @@ export default function Dashboard() {
               ))}
             </div>
             
-            {!unlocked && (
+            {!isPro && (
               <div className="mt-6 pt-4 border-t border-border/50 text-center">
                 <Button
                   variant="outline"
                   className="w-full text-xs uppercase tracking-widest font-bold"
-                  onClick={() => { window.location.href = "https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00"; }}
+                  onClick={() => setUpgradeOpen(true)}
                 >
                   <Lock className="w-3 h-3 mr-2" /> {t.dashboard.unlockTop50}
                 </Button>
@@ -198,6 +210,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }

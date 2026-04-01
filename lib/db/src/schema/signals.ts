@@ -1,6 +1,7 @@
-import { pgTable, text, serial, real, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, real, timestamp, boolean, integer, varchar, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import { usersTable } from "./auth";
 
 export const signalsTable = pgTable("signals", {
   id: serial("id").primaryKey(),
@@ -28,10 +29,12 @@ export type Signal = typeof signalsTable.$inferSelect;
 
 export const watchlistTable = pgTable("watchlist", {
   id: serial("id").primaryKey(),
-  ticker: text("ticker").notNull().unique(),
-  alertsEnabled: boolean("alerts_enabled").notNull().default(true),
+  userId: varchar("user_id").notNull().references(() => usersTable.id),
+  ticker: text("ticker").notNull(),
   addedAt: timestamp("added_at").notNull().defaultNow(),
-});
+}, (table) => [
+  uniqueIndex("watchlist_user_ticker_idx").on(table.userId, table.ticker),
+]);
 
 export const insertWatchlistSchema = createInsertSchema(watchlistTable).omit({ id: true, addedAt: true });
 export type InsertWatchlist = z.infer<typeof insertWatchlistSchema>;

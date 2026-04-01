@@ -141,7 +141,6 @@ export const GetWatchlistResponseItem = zod.object({
   ticker: zod.string(),
   addedAt: zod.string(),
   latestSignalScore: zod.number().optional(),
-  alertsEnabled: zod.boolean(),
 });
 export const GetWatchlistResponse = zod.array(GetWatchlistResponseItem);
 

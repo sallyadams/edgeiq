@@ -69,7 +69,6 @@ export interface WatchlistItem {
   ticker: string;
   addedAt: string;
   latestSignalScore?: number;
-  alertsEnabled: boolean;
 }
 
 export interface AddWatchlistRequest {

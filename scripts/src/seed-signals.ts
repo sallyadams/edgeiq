@@ -1,5 +1,5 @@
 import { db } from "@workspace/db";
-import { signalsTable, watchlistTable } from "@workspace/db/schema";
+import { signalsTable } from "@workspace/db/schema";
 
 const insiderSignals = [
   { ticker: "NVDA", type: "insider", action: "BUY", description: "CEO Jensen Huang purchased 50,000 shares", convictionScore: 94, winRate: 0.82, valueUsd: 43750000, filerName: "Jensen Huang", source: "SEC Form 4" },
@@ -41,7 +41,6 @@ async function seed() {
   console.log("Seeding signals...");
 
   await db.delete(signalsTable);
-  await db.delete(watchlistTable);
 
   const allSignals = [
     ...insiderSignals.map((s, i) => ({ ...s, reportedAt: new Date(now.getTime() - i * 2 * 60 * 60 * 1000) })),
@@ -65,13 +64,6 @@ async function seed() {
     source: s.source ?? null,
     reportedAt: s.reportedAt,
   })));
-
-  await db.insert(watchlistTable).values([
-    { ticker: "NVDA", alertsEnabled: true },
-    { ticker: "META", alertsEnabled: true },
-    { ticker: "PLTR", alertsEnabled: false },
-    { ticker: "AMD", alertsEnabled: true },
-  ]);
 
   console.log("Seeding complete!");
 }

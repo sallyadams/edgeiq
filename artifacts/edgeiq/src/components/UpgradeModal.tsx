@@ -3,34 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Lock, Zap, TrendingUp, Bell, Star, ArrowRight, Loader2 } from "lucide-react";
 import { useI18n } from "@/i18n";
 
-const UNLOCK_KEY = "edgeiq_unlocked";
-
-export function goToStripeCheckout() {
-  const origin = window.location.origin;
-  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
-  const successUrl = encodeURIComponent(`${origin}${basePath}/signals?upgraded=true`);
-  window.location.href = `https://buy.stripe.com/fZu6oGePYaES03wbzL8IU00?success_url=${successUrl}`;
-}
-
-export function useUnlocked() {
-  const [unlocked, setUnlocked] = React.useState(() =>
-    typeof window !== "undefined" && localStorage.getItem(UNLOCK_KEY) === "true"
-  );
-  const [justUpgraded, setJustUpgraded] = React.useState(false);
-
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("upgraded") === "true") {
-      localStorage.setItem(UNLOCK_KEY, "true");
-      setUnlocked(true);
-      setJustUpgraded(true);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("upgraded");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, []);
-
-  return { unlocked, justUpgraded };
+async function createCheckoutSession(plan: string = "early"): Promise<string> {
+  const res = await fetch("/api/checkout/create-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ plan }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Checkout failed" }));
+    throw new Error(err.error || "Checkout failed");
+  }
+  const data = await res.json();
+  return data.url;
 }
 
 interface UpgradeModalProps {
@@ -43,9 +28,18 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
   const [error, setError] = React.useState<string | null>(null);
   const { t } = useI18n();
 
-  function handleUpgrade() {
+  async function handleUpgrade() {
     setLoading(true);
-    goToStripeCheckout();
+    setError(null);
+    try {
+      const url = await createCheckoutSession("early");
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to start checkout");
+      setLoading(false);
+    }
   }
 
   return (

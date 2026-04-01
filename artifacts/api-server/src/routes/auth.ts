@@ -63,9 +63,23 @@ async function upsertUser(claims: Record<string, unknown>) {
   return user;
 }
 
-router.get("/auth/user", (req: Request, res: Response) => {
+router.get("/auth/user", async (req: Request, res: Response) => {
+  if (!req.isAuthenticated()) {
+    res.json({ user: null });
+    return;
+  }
+
+  const [dbUser] = await db
+    .select({ tier: usersTable.tier })
+    .from(usersTable)
+    .where(eq(usersTable.id, req.user!.id))
+    .limit(1);
+
   res.json({
-    user: req.isAuthenticated() ? req.user : null,
+    user: {
+      ...req.user,
+      tier: dbUser?.tier ?? "free",
+    },
   });
 });
 

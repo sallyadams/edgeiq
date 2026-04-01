@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Star, Bell, BellOff, Trash2, Plus, Search } from "lucide-react";
+import { Star, Trash2, Plus, Search } from "lucide-react";
 import { useGetWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -97,12 +97,6 @@ export default function Watchlist() {
                   <h3 className="text-2xl font-mono font-bold">{item.ticker}</h3>
                 </Link>
                 <div className="flex gap-1">
-                  <button 
-                    className={`p-1.5 rounded-md transition-colors ${item.alertsEnabled ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
-                    title={t.watchlist.toggleAlerts}
-                  >
-                    {item.alertsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-                  </button>
                   <button 
                     onClick={() => handleRemove(item.ticker)}
                     className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:bg-destructive/20 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"

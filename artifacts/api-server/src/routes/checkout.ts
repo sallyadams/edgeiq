@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import { getUncachableStripeClient, getStripePublishableKey } from "../lib/stripe";
 
 const router = Router();
@@ -25,12 +25,17 @@ router.get("/checkout/config", async (_req, res) => {
   try {
     const publishableKey = await getStripePublishableKey();
     res.json({ publishableKey });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Failed to get config" });
   }
 });
 
-router.post("/checkout/create-session", async (req, res) => {
+router.post("/checkout/create-session", async (req: Request, res: Response) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
   try {
     const stripe = await getUncachableStripeClient();
 
@@ -42,13 +47,14 @@ router.post("/checkout/create-session", async (req, res) => {
     const plan: "early" | "pro" | "elite" = planParam;
     const planConfig = PLANS[plan];
 
-    const referer = req.headers.referer || req.headers.origin || "http://localhost";
-    const refererUrl = new URL(referer);
-    const baseUrl = refererUrl.origin;
-    const pathPrefix = refererUrl.pathname.replace(/\/signals.*$/, "").replace(/\/+$/, "");
+    const baseUrl = process.env.REPLIT_DEV_DOMAIN
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : process.env.APP_URL || "http://localhost";
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
+      customer_email: req.user!.email ?? undefined,
+      metadata: { plan, userId: req.user!.id },
       line_items: [
         {
           price_data: {
@@ -63,13 +69,13 @@ router.post("/checkout/create-session", async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}${pathPrefix}/signals?upgraded=true`,
-      cancel_url: `${baseUrl}${pathPrefix}/signals`,
+      success_url: `${baseUrl}/signals?upgraded=true`,
+      cancel_url: `${baseUrl}/signals`,
     });
 
     res.json({ url: session.url });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Checkout failed" });
   }
 });
 

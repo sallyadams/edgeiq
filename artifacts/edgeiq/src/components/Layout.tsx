@@ -5,15 +5,17 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@workspace/replit-auth-web";
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
-import { useUnlocked, goToStripeCheckout } from "./UpgradeModal";
+import { UpgradeModal } from "./UpgradeModal";
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [langOpen, setLangOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { locale, setLocale, t } = useI18n();
-  const { unlocked } = useUnlocked();
+  const isPro = user?.tier === "pro" || user?.tier === "elite";
 
   const NAV_ITEMS = [
     { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
@@ -80,16 +82,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="p-4 space-y-3 border-t border-border/50">
-          {!unlocked && (
+          {!isPro && (
             <button
-              onClick={goToStripeCheckout}
+              onClick={() => setUpgradeOpen(true)}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
             >
               <Lock className="w-4 h-4" />
               {t.dashboard.unlockAllSignals}
             </button>
           )}
-          {!unlocked && (
+          {!isPro && (
             <div className="flex items-center justify-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
               <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
               {t.dashboard.freePlan}
@@ -170,14 +172,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span className="ml-2 font-display font-bold text-lg">EdgeIQ</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary/40 border border-border/50 rounded-full w-96 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50 transition-all">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const symbol = searchQuery.trim().toUpperCase();
+              if (symbol) {
+                setLocation(`/ticker/${symbol}`);
+                setSearchQuery("");
+              }
+            }}
+            className="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary/40 border border-border/50 rounded-full w-96 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50 transition-all"
+          >
             <Search className="w-4 h-4 text-muted-foreground" />
             <input 
               type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.nav.searchTickers}
               className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground w-full font-mono"
             />
-          </div>
+          </form>
 
           <div className="flex items-center gap-4">
             <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary/50">
@@ -259,6 +273,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </main>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }

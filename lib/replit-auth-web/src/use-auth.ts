@@ -6,6 +6,7 @@ export interface AuthUser {
   firstName: string | null;
   lastName: string | null;
   profileImageUrl: string | null;
+  tier: string;
 }
 
 interface AuthState {

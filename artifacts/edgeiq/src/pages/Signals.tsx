@@ -4,28 +4,15 @@ import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRi
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
 import { useI18n } from "@/i18n";
-import { useUnlocked, goToStripeCheckout } from "@/components/UpgradeModal";
+import { UpgradeModal } from "@/components/UpgradeModal";
+import { useAuth } from "@workspace/replit-auth-web";
 
 type GetSignalsType = "all" | "insider" | "options" | "sentiment";
 
 const FREE_SIGNAL_LIMIT = 3;
 
-
-function PremiumPaywall() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+function PremiumPaywall({ onUpgradeClick }: { onUpgradeClick: () => void }) {
   const { t } = useI18n();
-
-  async function handleUnlock() {
-    setLoading(true);
-    setError(null);
-    try {
-      goToStripeCheckout();
-    } catch {
-      setError(t.signals.somethingWentWrong);
-      setLoading(false);
-    }
-  }
 
   return (
     <motion.div
@@ -77,24 +64,12 @@ function PremiumPaywall() {
             <div className="text-xs text-muted-foreground mt-0.5">{t.signals.lockInRate}</div>
           </div>
 
-          {error && <p className="text-xs text-destructive mb-3">{error}</p>}
-
           <button
-            onClick={handleUnlock}
-            disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02] transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none"
+            onClick={onUpgradeClick}
+            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02] transition-all duration-200"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {t.signals.redirecting}
-              </>
-            ) : (
-              <>
-                {t.signals.unlockFullAccess}
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
+            {t.signals.unlockFullAccess}
+            <ArrowRight className="w-4 h-4" />
           </button>
 
           <p className="text-xs text-muted-foreground mt-4">
@@ -110,8 +85,23 @@ export default function Signals() {
   const [filterType, setFilterType] = useState<GetSignalsType>("all");
   const [search, setSearch] = useState("");
   const [bannerVisible, setBannerVisible] = useState(true);
-  const { unlocked, justUpgraded } = useUnlocked();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const { user } = useAuth();
+  const isPro = user?.tier === "pro" || user?.tier === "elite";
   const { t } = useI18n();
+
+  const justUpgraded = React.useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("upgraded") === "true";
+  }, []);
+
+  React.useEffect(() => {
+    if (justUpgraded) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("upgraded");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [justUpgraded]);
 
   const { data: signals, isLoading } = useGetSignals({
     type: filterType === "all" ? undefined : filterType,
@@ -126,9 +116,9 @@ export default function Signals() {
     { label: t.signals.aiSentiment, value: "sentiment" },
   ];
 
-  const visibleSignals = unlocked ? (signals ?? []) : (signals?.slice(0, FREE_SIGNAL_LIMIT) ?? []);
-  const lockedSignals  = unlocked ? [] : (signals?.slice(FREE_SIGNAL_LIMIT) ?? []);
-  const hasLocked = !isLoading && !unlocked && lockedSignals.length > 0;
+  const visibleSignals = isPro ? (signals ?? []) : (signals?.slice(0, FREE_SIGNAL_LIMIT) ?? []);
+  const lockedSignals  = isPro ? [] : (signals?.slice(FREE_SIGNAL_LIMIT) ?? []);
+  const hasLocked = !isLoading && !isPro && lockedSignals.length > 0;
 
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
@@ -215,8 +205,8 @@ export default function Signals() {
               >
                 <SignalCard
                   signal={signal}
-                  lockInsight={!unlocked}
-                  onUpgradeClick={goToStripeCheckout}
+                  lockInsight={!isPro}
+                  onUpgradeClick={() => setUpgradeOpen(true)}
                 />
               </motion.div>
             ))}
@@ -237,13 +227,15 @@ export default function Signals() {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
 
                 <div className="relative mt-4">
-                  <PremiumPaywall />
+                  <PremiumPaywall onUpgradeClick={() => setUpgradeOpen(true)} />
                 </div>
               </div>
             )}
           </>
         )}
       </div>
+
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }

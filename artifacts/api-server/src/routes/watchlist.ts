@@ -1,13 +1,28 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { watchlistTable, signalsTable } from "@workspace/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 const router: IRouter = Router();
 
-router.get("/watchlist", async (_req, res) => {
+function requireAuth(req: Request, res: Response): req is Request & { user: Express.User } {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Authentication required" });
+    return false;
+  }
+  return true;
+}
+
+router.get("/watchlist", async (req, res) => {
+  if (!requireAuth(req, res)) return;
+  const userId = req.user!.id;
+
   try {
-    const items = await db.select().from(watchlistTable).orderBy(desc(watchlistTable.addedAt));
+    const items = await db
+      .select()
+      .from(watchlistTable)
+      .where(eq(watchlistTable.userId, userId))
+      .orderBy(desc(watchlistTable.addedAt));
 
     const enriched = await Promise.all(items.map(async (item) => {
       const latestSignal = await db
@@ -21,7 +36,6 @@ router.get("/watchlist", async (_req, res) => {
         id: item.id,
         ticker: item.ticker,
         addedAt: item.addedAt,
-        alertsEnabled: item.alertsEnabled,
         latestSignalScore: latestSignal[0]?.score ?? null,
       };
     }));
@@ -34,6 +48,9 @@ router.get("/watchlist", async (_req, res) => {
 });
 
 router.post("/watchlist", async (req, res) => {
+  if (!requireAuth(req, res)) return;
+  const userId = req.user!.id;
+
   try {
     const { ticker } = req.body as { ticker: string };
     if (!ticker) {
@@ -42,12 +59,16 @@ router.post("/watchlist", async (req, res) => {
 
     const [item] = await db
       .insert(watchlistTable)
-      .values({ ticker: ticker.toUpperCase(), alertsEnabled: true })
+      .values({ userId, ticker: ticker.toUpperCase() })
       .onConflictDoNothing()
       .returning();
 
     if (!item) {
-      const existing = await db.select().from(watchlistTable).where(eq(watchlistTable.ticker, ticker.toUpperCase())).limit(1);
+      const existing = await db
+        .select()
+        .from(watchlistTable)
+        .where(and(eq(watchlistTable.userId, userId), eq(watchlistTable.ticker, ticker.toUpperCase())))
+        .limit(1);
       return res.status(201).json({ ...existing[0], latestSignalScore: null });
     }
 
@@ -59,9 +80,14 @@ router.post("/watchlist", async (req, res) => {
 });
 
 router.delete("/watchlist/:ticker", async (req, res) => {
+  if (!requireAuth(req, res)) return;
+  const userId = req.user!.id;
+
   try {
     const ticker = req.params.ticker.toUpperCase();
-    await db.delete(watchlistTable).where(eq(watchlistTable.ticker, ticker));
+    await db
+      .delete(watchlistTable)
+      .where(and(eq(watchlistTable.userId, userId), eq(watchlistTable.ticker, ticker)));
     res.json({ success: true, message: `${ticker} removed from watchlist` });
   } catch (err) {
     console.error(err);

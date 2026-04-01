@@ -315,13 +315,10 @@ components:
           type: string
         latestSignalScore:
           type: number
-        alertsEnabled:
-          type: boolean
       required:
         - id
         - ticker
         - addedAt
-        - alertsEnabled
 
     AddWatchlistRequest:
       type: object

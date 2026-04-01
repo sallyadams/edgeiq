@@ -5,7 +5,6 @@ import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check, G
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
 import { useAuth } from "@workspace/replit-auth-web";
 
-import { goToStripeCheckout } from "@/components/UpgradeModal";
 
 function LanguageSwitcher() {
   const { locale, setLocale } = useI18n();
@@ -97,8 +96,24 @@ export default function Landing() {
 
     async function handleCta() {
       if (tier.kind !== "paid") return;
+      if (!isAuthenticated) {
+        login();
+        return;
+      }
       setLoading(true);
-      goToStripeCheckout();
+      try {
+        const res = await fetch("/api/checkout/create-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ plan: tier.plan ?? "early" }),
+        });
+        if (!res.ok) throw new Error("Checkout failed");
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+      } catch {
+        setLoading(false);
+      }
     }
 
     return (
