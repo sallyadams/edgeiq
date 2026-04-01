@@ -80,6 +80,61 @@ export interface SuccessResponse {
   message: string;
 }
 
+export interface PortfolioResponse {
+  balance: number;
+  initialBalance: number;
+  totalPnl: number;
+  totalPnlPercent: number;
+  openPositionsCount: number;
+  totalTradesCount: number;
+  unrealizedPnl: number;
+}
+
+export interface PositionResponse {
+  id: number;
+  ticker: string;
+  side: string;
+  quantity: number;
+  entryPrice: number;
+  currentPrice: number;
+  pnl: number;
+  pnlPercent: number;
+  status: string;
+  openedAt: string;
+  closedAt?: string;
+}
+
+export interface TradeResponse {
+  id: number;
+  ticker: string;
+  side: string;
+  quantity: number;
+  price: number;
+  total: number;
+  executedAt: string;
+}
+
+export type ExecuteTradeRequestSide =
+  (typeof ExecuteTradeRequestSide)[keyof typeof ExecuteTradeRequestSide];
+
+export const ExecuteTradeRequestSide = {
+  buy: "buy",
+  sell: "sell",
+} as const;
+
+export interface ExecuteTradeRequest {
+  ticker: string;
+  side: ExecuteTradeRequestSide;
+  quantity: number;
+}
+
+export interface TradeResult {
+  success: boolean;
+  message: string;
+  trade?: TradeResponse;
+  portfolio?: PortfolioResponse;
+}
+
 export type GetSignalsParams = {
   type?: GetSignalsType;
   ticker?: string;
@@ -95,3 +150,20 @@ export const GetSignalsType = {
   sentiment: "sentiment",
   all: "all",
 } as const;
+
+export type GetPositionsParams = {
+  status?: GetPositionsStatus;
+};
+
+export type GetPositionsStatus =
+  (typeof GetPositionsStatus)[keyof typeof GetPositionsStatus];
+
+export const GetPositionsStatus = {
+  open: "open",
+  closed: "closed",
+  all: "all",
+} as const;
+
+export type GetTradesParams = {
+  limit?: number;
+};

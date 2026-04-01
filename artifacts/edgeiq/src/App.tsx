@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import Signals from "@/pages/Signals";
 import Watchlist from "@/pages/Watchlist";
 import TickerDetail from "@/pages/TickerDetail";
+import Portfolio from "@/pages/Portfolio";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -83,6 +84,13 @@ function Router() {
         <ProtectedRoute>
           <Layout>
             <TickerDetail />
+          </Layout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/portfolio">
+        <ProtectedRoute>
+          <Layout>
+            <Portfolio />
           </Layout>
         </ProtectedRoute>
       </Route>

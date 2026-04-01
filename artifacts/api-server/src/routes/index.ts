@@ -5,6 +5,7 @@ import signalsRouter from "./signals";
 import marketRouter from "./market";
 import watchlistRouter from "./watchlist";
 import checkoutRouter from "./checkout";
+import tradingRouter from "./trading";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(signalsRouter);
 router.use(marketRouter);
 router.use(watchlistRouter);
 router.use(checkoutRouter);
+router.use(tradingRouter);
 
 export default router;

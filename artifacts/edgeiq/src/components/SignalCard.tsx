@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, fr, de, es, nl } from "date-fns/locale";
-import { TrendingUp, TrendingDown, Users, BrainCircuit, Activity, Flame, Sparkles, Lock } from "lucide-react";
+import { TrendingUp, TrendingDown, Users, BrainCircuit, Activity, Flame, Sparkles, Lock, ArrowRightLeft } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { cn, formatCurrency, formatPercent } from "@/lib/utils";
 import type { Signal } from "@workspace/api-client-react";
@@ -15,6 +15,7 @@ interface SignalCardProps {
   compact?: boolean;
   lockInsight?: boolean;
   onUpgradeClick?: () => void;
+  onTradeClick?: (ticker: string, side: "buy" | "sell") => void;
 }
 
 type ConvictionTier = "high" | "medium" | "low";
@@ -73,7 +74,7 @@ const tierBadgeLabel: Record<ConvictionTier, string> = {
   low: "Low",
 };
 
-export function SignalCard({ signal, compact = false, lockInsight = false, onUpgradeClick }: SignalCardProps) {
+export function SignalCard({ signal, compact = false, lockInsight = false, onUpgradeClick, onTradeClick }: SignalCardProps) {
   const { locale, t } = useI18n();
   const isBullish = signal.action.toLowerCase() === 'buy' || signal.action.toLowerCase() === 'calls' || signal.action.toLowerCase() === 'bullish';
   const isBearish = signal.action.toLowerCase() === 'sell' || signal.action.toLowerCase() === 'puts' || signal.action.toLowerCase() === 'bearish';
@@ -208,6 +209,23 @@ export function SignalCard({ signal, compact = false, lockInsight = false, onUpg
             </div>
           )}
         </div>
+      )}
+
+      {onTradeClick && (
+        <button
+          onClick={() => onTradeClick(signal.ticker, isBullish ? "buy" : "sell")}
+          className={cn(
+            "mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all border",
+            isBullish
+              ? "bg-success/10 border-success/30 text-success hover:bg-success/20"
+              : isBearish
+                ? "bg-destructive/10 border-destructive/30 text-destructive hover:bg-destructive/20"
+                : "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
+          )}
+        >
+          <ArrowRightLeft className="w-4 h-4" />
+          {t.trading.trade} {signal.ticker}
+        </button>
       )}
     </div>
   );

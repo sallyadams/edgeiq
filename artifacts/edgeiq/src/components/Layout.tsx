@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Activity, LayoutDashboard, Star, Search, Bell, LogIn, LogOut, Menu, X, Globe, Lock } from "lucide-react";
+import { Activity, LayoutDashboard, Star, Search, Bell, LogIn, LogOut, Menu, X, Globe, Lock, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@workspace/replit-auth-web";
@@ -20,6 +20,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const NAV_ITEMS = [
     { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
     { href: "/signals", label: t.nav.signalFeed, icon: Activity },
+    { href: "/portfolio", label: t.nav.portfolio, icon: Briefcase },
     { href: "/watchlist", label: t.nav.watchlist, icon: Star },
   ];
 

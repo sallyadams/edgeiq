@@ -7,13 +7,22 @@
  */
 
 export * from "./addWatchlistRequest";
+export * from "./executeTradeRequest";
+export * from "./executeTradeRequestSide";
+export * from "./getPositionsParams";
+export * from "./getPositionsStatus";
 export * from "./getSignalsParams";
 export * from "./getSignalsType";
+export * from "./getTradesParams";
 export * from "./healthStatus";
 export * from "./marketQuote";
 export * from "./marketStats";
 export * from "./marketStatsTopSectorsItem";
+export * from "./portfolioResponse";
+export * from "./positionResponse";
 export * from "./signal";
 export * from "./signalType";
 export * from "./successResponse";
+export * from "./tradeResponse";
+export * from "./tradeResult";
 export * from "./watchlistItem";

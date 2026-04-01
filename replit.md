@@ -75,6 +75,7 @@ Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client insta
 - `src/schema/index.ts` — barrel re-export of all models
 - `src/schema/auth.ts` — `usersTable` (with `tier` column for pro status), `sessionsTable`, `oidcStateTable`
 - `src/schema/signals.ts` — `signalsTable`, `watchlistTable` (per-user with `userId` FK and composite unique on `userId+ticker`)
+- `src/schema/trading.ts` — `portfoliosTable` (virtual wallet with balance), `positionsTable` (open/closed positions), `tradesTable` (executed trades with price/quantity)
 - `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
 - Exports: `.` (pool, db, schema), `./schema` (schema only)
 
@@ -102,7 +103,7 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 React + Vite frontend for the EdgeIQ market intelligence platform.
 
 - **Multi-language (i18n)**: 5 languages (EN, FR, DE, ES, NL) via custom React context (`src/i18n/`). `useI18n()` hook provides `{ locale, setLocale, t }`. Language persisted in `localStorage` key `edgeiq_locale`, auto-detects browser language. Language switcher in sidebar (desktop) and mobile menu.
-- **Pages**: Landing, Dashboard, Signals (with paywall), Watchlist, TickerDetail, NotFound — all fully translated.
+- **Pages**: Landing, Dashboard, Signals (with paywall), Watchlist, Portfolio (paper trading), TickerDetail, NotFound — all fully translated.
 - **Auth**: Uses `@workspace/replit-auth-web` `useAuth()` hook. Sign-in/out in sidebar + header.
 - **Stripe**: €9/month Early, €19/month Pro, and €49/month Elite checkout via `/api/checkout/create-session`. Pro status persisted in `users.tier` DB column (updated by Stripe webhook on `checkout.session.completed`). Frontend checks `user.tier` from `/api/auth/user`.
 - **Signals**: 20 demo signals seeded, FREE_SIGNAL_LIMIT = 3, blurred paywall for locked signals.
@@ -115,7 +116,8 @@ React + Vite frontend for the EdgeIQ market intelligence platform.
   - `SignalCard.tsx` — Accepts `lockInsight` and `onUpgradeClick` props to blur AI insights for free users with an upgrade button overlay.
 - **Layout sidebar**: Shows "Free Plan" badge and "Unlock All Signals" CTA button for non-unlocked users.
 - **Landing page**: Aggressive conversion-optimized copy — "Start Free — Get 3 Live Signals" CTA, "Most traders choose this" Pro badge, urgency text under Pro/Elite buttons, friction triggers (X marks) on Free plan showing limitations, stronger final CTA "Get Your First Winning Signal in Seconds". All copy translated across 5 languages.
-- **i18n keys**: Full activation flow translated in all 5 locales — `upgradeModal.*`, `signalCard.aiInsight/upgradeToUnlock`, `dashboard.featuredSignal/highConvictionSignal/viewFullAnalysis/signalsDetected/tradersUpgraded/freePlan/unlockAllSignals`, `proUrgency`, `eliteUrgency`, `freeLimitation1`, `freeLimitation2`, `tradersBadge`.
+- **Paper Trading**: Virtual €10,000 demo account with buy/sell execution from SignalCard trade buttons. TradeModal component for order entry. Portfolio page shows balance, P&L, open positions, trade history. Risk guards: max position size €5,000, negative balance prevention. All trades wrapped in DB transactions. Broker abstraction layer in `api-server/src/lib/broker.ts` supports paper/live mode via `BROKER_MODE` env var (defaults to "paper"). Trading routes: `GET /portfolio`, `POST /portfolio/reset`, `GET /positions`, `GET /trades`, `POST /trades`, `POST /positions/:id/close`.
+- **i18n keys**: Full activation flow and trading translated in all 5 locales — `upgradeModal.*`, `signalCard.aiInsight/upgradeToUnlock`, `dashboard.featuredSignal/highConvictionSignal/viewFullAnalysis/signalsDetected/tradersUpgraded/freePlan/unlockAllSignals`, `proUrgency`, `eliteUrgency`, `freeLimitation1`, `freeLimitation2`, `tradersBadge`, `trading.*` (portfolio, trade execution, positions, history).
 - **date-fns locales**: Signal timestamps use locale-aware `formatDistanceToNow`.
 
 ### `lib/replit-auth-web` (`@workspace/replit-auth-web`)

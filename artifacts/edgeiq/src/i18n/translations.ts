@@ -21,6 +21,7 @@ type TranslationKeys = {
     menu: string;
     dashboard: string;
     signalFeed: string;
+    portfolio: string;
     watchlist: string;
     signIn: string;
     signOut: string;
@@ -187,6 +188,48 @@ type TranslationKeys = {
     ctaSubtitle: string;
     footerDisclaimer: string;
   };
+  trading: {
+    portfolio: string;
+    portfolioSubtitle: string;
+    demoAccount: string;
+    balance: string;
+    of: string;
+    totalPnl: string;
+    unrealizedPnl: string;
+    openPositions: string;
+    totalTrades: string;
+    allTime: string;
+    tradeHistory: string;
+    noOpenPositions: string;
+    noOpenPositionsHint: string;
+    noTrades: string;
+    noTradesHint: string;
+    shares: string;
+    close: string;
+    ticker: string;
+    side: string;
+    qty: string;
+    price: string;
+    total: string;
+    date: string;
+    refresh: string;
+    reset: string;
+    resetConfirm: string;
+    confirmReset: string;
+    executeTrade: string;
+    paperTrading: string;
+    currentPrice: string;
+    buy: string;
+    sell: string;
+    quantity: string;
+    estimatedTotal: string;
+    maxPosition: string;
+    executing: string;
+    invalidQuantity: string;
+    tradeFailed: string;
+    disclaimer: string;
+    trade: string;
+  };
   notFound: {
     title: string;
     message: string;
@@ -198,6 +241,7 @@ const en: TranslationKeys = {
     menu: "Menu",
     dashboard: "Dashboard",
     signalFeed: "Signal Feed",
+    portfolio: "Portfolio",
     watchlist: "Watchlist",
     signIn: "Sign In",
     signOut: "Sign Out",
@@ -364,6 +408,48 @@ const en: TranslationKeys = {
     ctaSubtitle: "Join traders already using EdgeIQ to track smart money in real-time.",
     footerDisclaimer: "Market intelligence for the modern trader. Not financial advice.",
   },
+  trading: {
+    portfolio: "Portfolio",
+    portfolioSubtitle: "Track your paper trading performance and open positions.",
+    demoAccount: "Demo Account",
+    balance: "Balance",
+    of: "of",
+    totalPnl: "Total P&L",
+    unrealizedPnl: "Unrealized P&L",
+    openPositions: "Open Positions",
+    totalTrades: "Total Trades",
+    allTime: "All time",
+    tradeHistory: "Trade History",
+    noOpenPositions: "No open positions",
+    noOpenPositionsHint: "Execute a trade from the Signal Feed to open your first position.",
+    noTrades: "No trades yet",
+    noTradesHint: "Your trade history will appear here once you execute your first trade.",
+    shares: "shares",
+    close: "Close",
+    ticker: "Ticker",
+    side: "Side",
+    qty: "Qty",
+    price: "Price",
+    total: "Total",
+    date: "Date",
+    refresh: "Refresh",
+    reset: "Reset",
+    resetConfirm: "This will reset your portfolio to €10,000 and delete all positions and trades. This cannot be undone.",
+    confirmReset: "Confirm Reset",
+    executeTrade: "Execute Trade",
+    paperTrading: "Paper Trading — No real money",
+    currentPrice: "Current price",
+    buy: "Buy",
+    sell: "Sell",
+    quantity: "Quantity",
+    estimatedTotal: "Estimated Total",
+    maxPosition: "Max position size",
+    executing: "Executing...",
+    invalidQuantity: "Please enter a valid quantity",
+    tradeFailed: "Trade execution failed",
+    disclaimer: "Paper trading only. No real money is involved. Prices are simulated.",
+    trade: "Trade",
+  },
   notFound: {
     title: "404 Page Not Found",
     message: "The page you're looking for doesn't exist.",
@@ -375,6 +461,7 @@ const fr: TranslationKeys = {
     menu: "Menu",
     dashboard: "Tableau de bord",
     signalFeed: "Flux de signaux",
+    portfolio: "Portefeuille",
     watchlist: "Liste de suivi",
     signIn: "Connexion",
     signOut: "Déconnexion",
@@ -541,6 +628,48 @@ const fr: TranslationKeys = {
     ctaSubtitle: "Rejoignez les traders qui utilisent d\u00e9j\u00e0 EdgeIQ pour suivre le smart money en temps r\u00e9el.",
     footerDisclaimer: "Intelligence de marché pour le trader moderne. Ceci n'est pas un conseil financier.",
   },
+  trading: {
+    portfolio: "Portefeuille",
+    portfolioSubtitle: "Suivez vos performances de trading papier et vos positions ouvertes.",
+    demoAccount: "Compte démo",
+    balance: "Solde",
+    of: "sur",
+    totalPnl: "P&L total",
+    unrealizedPnl: "P&L non réalisé",
+    openPositions: "Positions ouvertes",
+    totalTrades: "Total des trades",
+    allTime: "Depuis le début",
+    tradeHistory: "Historique des trades",
+    noOpenPositions: "Aucune position ouverte",
+    noOpenPositionsHint: "Exécutez un trade depuis le flux de signaux pour ouvrir votre première position.",
+    noTrades: "Aucun trade",
+    noTradesHint: "Votre historique de trades apparaîtra ici après votre premier trade.",
+    shares: "actions",
+    close: "Fermer",
+    ticker: "Ticker",
+    side: "Côté",
+    qty: "Qté",
+    price: "Prix",
+    total: "Total",
+    date: "Date",
+    refresh: "Actualiser",
+    reset: "Réinitialiser",
+    resetConfirm: "Cela réinitialisera votre portefeuille à 10 000 € et supprimera toutes les positions et trades. Cette action est irréversible.",
+    confirmReset: "Confirmer",
+    executeTrade: "Exécuter le trade",
+    paperTrading: "Trading papier — Pas d'argent réel",
+    currentPrice: "Prix actuel",
+    buy: "Acheter",
+    sell: "Vendre",
+    quantity: "Quantité",
+    estimatedTotal: "Total estimé",
+    maxPosition: "Taille max. de position",
+    executing: "Exécution...",
+    invalidQuantity: "Veuillez entrer une quantité valide",
+    tradeFailed: "L'exécution du trade a échoué",
+    disclaimer: "Trading papier uniquement. Aucun argent réel n'est impliqué. Les prix sont simulés.",
+    trade: "Trader",
+  },
   notFound: {
     title: "404 Page non trouvée",
     message: "La page que vous cherchez n'existe pas.",
@@ -552,6 +681,7 @@ const de: TranslationKeys = {
     menu: "Menü",
     dashboard: "Dashboard",
     signalFeed: "Signal-Feed",
+    portfolio: "Portfolio",
     watchlist: "Watchlist",
     signIn: "Anmelden",
     signOut: "Abmelden",
@@ -718,6 +848,48 @@ const de: TranslationKeys = {
     ctaSubtitle: "Schlie\u00dfen Sie sich Tradern an, die EdgeIQ bereits nutzen, um Smart Money in Echtzeit zu verfolgen.",
     footerDisclaimer: "Marktintelligenz für den modernen Trader. Keine Finanzberatung.",
   },
+  trading: {
+    portfolio: "Portfolio",
+    portfolioSubtitle: "Verfolgen Sie Ihre Paper-Trading-Performance und offene Positionen.",
+    demoAccount: "Demokonto",
+    balance: "Guthaben",
+    of: "von",
+    totalPnl: "Gesamt-P&L",
+    unrealizedPnl: "Unrealisierte P&L",
+    openPositions: "Offene Positionen",
+    totalTrades: "Trades gesamt",
+    allTime: "Gesamt",
+    tradeHistory: "Trade-Verlauf",
+    noOpenPositions: "Keine offenen Positionen",
+    noOpenPositionsHint: "Führen Sie einen Trade aus dem Signal-Feed aus, um Ihre erste Position zu eröffnen.",
+    noTrades: "Noch keine Trades",
+    noTradesHint: "Ihr Trade-Verlauf erscheint hier nach Ihrem ersten Trade.",
+    shares: "Aktien",
+    close: "Schließen",
+    ticker: "Ticker",
+    side: "Seite",
+    qty: "Menge",
+    price: "Preis",
+    total: "Gesamt",
+    date: "Datum",
+    refresh: "Aktualisieren",
+    reset: "Zurücksetzen",
+    resetConfirm: "Dies setzt Ihr Portfolio auf 10.000 € zurück und löscht alle Positionen und Trades. Dies kann nicht rückgängig gemacht werden.",
+    confirmReset: "Bestätigen",
+    executeTrade: "Trade ausführen",
+    paperTrading: "Paper Trading — Kein echtes Geld",
+    currentPrice: "Aktueller Preis",
+    buy: "Kaufen",
+    sell: "Verkaufen",
+    quantity: "Menge",
+    estimatedTotal: "Geschätzter Gesamtbetrag",
+    maxPosition: "Max. Positionsgröße",
+    executing: "Wird ausgeführt...",
+    invalidQuantity: "Bitte geben Sie eine gültige Menge ein",
+    tradeFailed: "Trade-Ausführung fehlgeschlagen",
+    disclaimer: "Nur Paper Trading. Kein echtes Geld. Preise sind simuliert.",
+    trade: "Handeln",
+  },
   notFound: {
     title: "404 Seite nicht gefunden",
     message: "Die gesuchte Seite existiert nicht.",
@@ -729,6 +901,7 @@ const es: TranslationKeys = {
     menu: "Menú",
     dashboard: "Panel",
     signalFeed: "Feed de señales",
+    portfolio: "Cartera",
     watchlist: "Seguimiento",
     signIn: "Iniciar sesión",
     signOut: "Cerrar sesión",
@@ -895,6 +1068,48 @@ const es: TranslationKeys = {
     ctaSubtitle: "\u00danete a traders que ya usan EdgeIQ para rastrear smart money en tiempo real.",
     footerDisclaimer: "Inteligencia de mercado para el trader moderno. No es consejo financiero.",
   },
+  trading: {
+    portfolio: "Cartera",
+    portfolioSubtitle: "Sigue el rendimiento de tu trading de papel y posiciones abiertas.",
+    demoAccount: "Cuenta demo",
+    balance: "Saldo",
+    of: "de",
+    totalPnl: "P&L total",
+    unrealizedPnl: "P&L no realizado",
+    openPositions: "Posiciones abiertas",
+    totalTrades: "Total de operaciones",
+    allTime: "Todo el tiempo",
+    tradeHistory: "Historial de operaciones",
+    noOpenPositions: "Sin posiciones abiertas",
+    noOpenPositionsHint: "Ejecuta una operación desde el feed de señales para abrir tu primera posición.",
+    noTrades: "Sin operaciones",
+    noTradesHint: "Tu historial de operaciones aparecerá aquí después de tu primera operación.",
+    shares: "acciones",
+    close: "Cerrar",
+    ticker: "Ticker",
+    side: "Lado",
+    qty: "Cant.",
+    price: "Precio",
+    total: "Total",
+    date: "Fecha",
+    refresh: "Actualizar",
+    reset: "Reiniciar",
+    resetConfirm: "Esto reiniciará tu cartera a 10.000 € y eliminará todas las posiciones y operaciones. No se puede deshacer.",
+    confirmReset: "Confirmar",
+    executeTrade: "Ejecutar operación",
+    paperTrading: "Trading de papel — Sin dinero real",
+    currentPrice: "Precio actual",
+    buy: "Comprar",
+    sell: "Vender",
+    quantity: "Cantidad",
+    estimatedTotal: "Total estimado",
+    maxPosition: "Tamaño máx. de posición",
+    executing: "Ejecutando...",
+    invalidQuantity: "Introduce una cantidad válida",
+    tradeFailed: "Fallo en la ejecución",
+    disclaimer: "Solo trading de papel. No se usa dinero real. Los precios son simulados.",
+    trade: "Operar",
+  },
   notFound: {
     title: "404 Página no encontrada",
     message: "La página que buscas no existe.",
@@ -906,6 +1121,7 @@ const nl: TranslationKeys = {
     menu: "Menu",
     dashboard: "Dashboard",
     signalFeed: "Signaalfeed",
+    portfolio: "Portefeuille",
     watchlist: "Volglijst",
     signIn: "Inloggen",
     signOut: "Uitloggen",
@@ -1071,6 +1287,48 @@ const nl: TranslationKeys = {
     ctaTitle: "Ontvang je eerste winnend signaal in seconden",
     ctaSubtitle: "Sluit je aan bij traders die EdgeIQ al gebruiken om smart money in realtime te volgen.",
     footerDisclaimer: "Marktintelligentie voor de moderne trader. Geen financieel advies.",
+  },
+  trading: {
+    portfolio: "Portefeuille",
+    portfolioSubtitle: "Volg je paper trading prestaties en open posities.",
+    demoAccount: "Demo-account",
+    balance: "Saldo",
+    of: "van",
+    totalPnl: "Totaal P&L",
+    unrealizedPnl: "Ongerealiseerde P&L",
+    openPositions: "Open posities",
+    totalTrades: "Totaal trades",
+    allTime: "Alle tijd",
+    tradeHistory: "Trade-geschiedenis",
+    noOpenPositions: "Geen open posities",
+    noOpenPositionsHint: "Voer een trade uit vanuit de signaalfeed om je eerste positie te openen.",
+    noTrades: "Nog geen trades",
+    noTradesHint: "Je trade-geschiedenis verschijnt hier na je eerste trade.",
+    shares: "aandelen",
+    close: "Sluiten",
+    ticker: "Ticker",
+    side: "Zijde",
+    qty: "Aantal",
+    price: "Prijs",
+    total: "Totaal",
+    date: "Datum",
+    refresh: "Vernieuwen",
+    reset: "Resetten",
+    resetConfirm: "Dit reset je portefeuille naar €10.000 en verwijdert alle posities en trades. Dit kan niet ongedaan worden.",
+    confirmReset: "Bevestigen",
+    executeTrade: "Trade uitvoeren",
+    paperTrading: "Paper Trading — Geen echt geld",
+    currentPrice: "Huidige prijs",
+    buy: "Kopen",
+    sell: "Verkopen",
+    quantity: "Aantal",
+    estimatedTotal: "Geschat totaal",
+    maxPosition: "Max. positiegrootte",
+    executing: "Uitvoeren...",
+    invalidQuantity: "Voer een geldig aantal in",
+    tradeFailed: "Trade-uitvoering mislukt",
+    disclaimer: "Alleen paper trading. Geen echt geld. Prijzen zijn gesimuleerd.",
+    trade: "Handelen",
   },
   notFound: {
     title: "404 Pagina niet gevonden",

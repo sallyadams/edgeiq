@@ -162,3 +162,139 @@ export const RemoveFromWatchlistResponse = zod.object({
   success: zod.boolean(),
   message: zod.string(),
 });
+
+/**
+ * @summary Get user portfolio (balance, P&L, stats)
+ */
+export const GetPortfolioResponse = zod.object({
+  balance: zod.number(),
+  initialBalance: zod.number(),
+  totalPnl: zod.number(),
+  totalPnlPercent: zod.number(),
+  openPositionsCount: zod.number(),
+  totalTradesCount: zod.number(),
+  unrealizedPnl: zod.number(),
+});
+
+/**
+ * @summary Reset portfolio to initial state
+ */
+export const ResetPortfolioResponse = zod.object({
+  balance: zod.number(),
+  initialBalance: zod.number(),
+  totalPnl: zod.number(),
+  totalPnlPercent: zod.number(),
+  openPositionsCount: zod.number(),
+  totalTradesCount: zod.number(),
+  unrealizedPnl: zod.number(),
+});
+
+/**
+ * @summary Get open positions
+ */
+export const GetPositionsQueryParams = zod.object({
+  status: zod.enum(["open", "closed", "all"]).optional(),
+});
+
+export const GetPositionsResponseItem = zod.object({
+  id: zod.number(),
+  ticker: zod.string(),
+  side: zod.string(),
+  quantity: zod.number(),
+  entryPrice: zod.number(),
+  currentPrice: zod.number(),
+  pnl: zod.number(),
+  pnlPercent: zod.number(),
+  status: zod.string(),
+  openedAt: zod.string(),
+  closedAt: zod.string().optional(),
+});
+export const GetPositionsResponse = zod.array(GetPositionsResponseItem);
+
+/**
+ * @summary Get trade history
+ */
+export const GetTradesQueryParams = zod.object({
+  limit: zod.coerce.number().optional(),
+});
+
+export const GetTradesResponseItem = zod.object({
+  id: zod.number(),
+  ticker: zod.string(),
+  side: zod.string(),
+  quantity: zod.number(),
+  price: zod.number(),
+  total: zod.number(),
+  executedAt: zod.string(),
+});
+export const GetTradesResponse = zod.array(GetTradesResponseItem);
+
+/**
+ * @summary Execute a paper trade
+ */
+export const ExecuteTradeBody = zod.object({
+  ticker: zod.string(),
+  side: zod.enum(["buy", "sell"]),
+  quantity: zod.number(),
+});
+
+export const ExecuteTradeResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+  trade: zod
+    .object({
+      id: zod.number(),
+      ticker: zod.string(),
+      side: zod.string(),
+      quantity: zod.number(),
+      price: zod.number(),
+      total: zod.number(),
+      executedAt: zod.string(),
+    })
+    .optional(),
+  portfolio: zod
+    .object({
+      balance: zod.number(),
+      initialBalance: zod.number(),
+      totalPnl: zod.number(),
+      totalPnlPercent: zod.number(),
+      openPositionsCount: zod.number(),
+      totalTradesCount: zod.number(),
+      unrealizedPnl: zod.number(),
+    })
+    .optional(),
+});
+
+/**
+ * @summary Close an open position
+ */
+export const ClosePositionParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ClosePositionResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+  trade: zod
+    .object({
+      id: zod.number(),
+      ticker: zod.string(),
+      side: zod.string(),
+      quantity: zod.number(),
+      price: zod.number(),
+      total: zod.number(),
+      executedAt: zod.string(),
+    })
+    .optional(),
+  portfolio: zod
+    .object({
+      balance: zod.number(),
+      initialBalance: zod.number(),
+      totalPnl: zod.number(),
+      totalPnlPercent: zod.number(),
+      openPositionsCount: zod.number(),
+      totalTradesCount: zod.number(),
+      unrealizedPnl: zod.number(),
+    })
+    .optional(),
+});

@@ -18,12 +18,19 @@ import type {
 
 import type {
   AddWatchlistRequest,
+  ExecuteTradeRequest,
+  GetPositionsParams,
   GetSignalsParams,
+  GetTradesParams,
   HealthStatus,
   MarketQuote,
   MarketStats,
+  PortfolioResponse,
+  PositionResponse,
   Signal,
   SuccessResponse,
+  TradeResponse,
+  TradeResult,
   WatchlistItem,
 } from "./api.schemas";
 
@@ -774,4 +781,518 @@ export const useRemoveFromWatchlist = <
   TContext
 > => {
   return useMutation(getRemoveFromWatchlistMutationOptions(options));
+};
+
+/**
+ * @summary Get user portfolio (balance, P&L, stats)
+ */
+export const getGetPortfolioUrl = () => {
+  return `/api/portfolio`;
+};
+
+export const getPortfolio = async (
+  options?: RequestInit,
+): Promise<PortfolioResponse> => {
+  return customFetch<PortfolioResponse>(getGetPortfolioUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPortfolioQueryKey = () => {
+  return [`/api/portfolio`] as const;
+};
+
+export const getGetPortfolioQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPortfolio>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPortfolio>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPortfolioQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPortfolio>>> = ({
+    signal,
+  }) => getPortfolio({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPortfolio>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPortfolioQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPortfolio>>
+>;
+export type GetPortfolioQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get user portfolio (balance, P&L, stats)
+ */
+
+export function useGetPortfolio<
+  TData = Awaited<ReturnType<typeof getPortfolio>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPortfolio>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPortfolioQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Reset portfolio to initial state
+ */
+export const getResetPortfolioUrl = () => {
+  return `/api/portfolio/reset`;
+};
+
+export const resetPortfolio = async (
+  options?: RequestInit,
+): Promise<PortfolioResponse> => {
+  return customFetch<PortfolioResponse>(getResetPortfolioUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getResetPortfolioMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resetPortfolio>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof resetPortfolio>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["resetPortfolio"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof resetPortfolio>>,
+    void
+  > = () => {
+    return resetPortfolio(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ResetPortfolioMutationResult = NonNullable<
+  Awaited<ReturnType<typeof resetPortfolio>>
+>;
+
+export type ResetPortfolioMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Reset portfolio to initial state
+ */
+export const useResetPortfolio = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resetPortfolio>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof resetPortfolio>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getResetPortfolioMutationOptions(options));
+};
+
+/**
+ * @summary Get open positions
+ */
+export const getGetPositionsUrl = (params?: GetPositionsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/positions?${stringifiedParams}`
+    : `/api/positions`;
+};
+
+export const getPositions = async (
+  params?: GetPositionsParams,
+  options?: RequestInit,
+): Promise<PositionResponse[]> => {
+  return customFetch<PositionResponse[]>(getGetPositionsUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPositionsQueryKey = (params?: GetPositionsParams) => {
+  return [`/api/positions`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetPositionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPositions>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetPositionsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPositions>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPositionsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPositions>>> = ({
+    signal,
+  }) => getPositions(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPositions>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPositionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPositions>>
+>;
+export type GetPositionsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get open positions
+ */
+
+export function useGetPositions<
+  TData = Awaited<ReturnType<typeof getPositions>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetPositionsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPositions>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPositionsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get trade history
+ */
+export const getGetTradesUrl = (params?: GetTradesParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/trades?${stringifiedParams}`
+    : `/api/trades`;
+};
+
+export const getTrades = async (
+  params?: GetTradesParams,
+  options?: RequestInit,
+): Promise<TradeResponse[]> => {
+  return customFetch<TradeResponse[]>(getGetTradesUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetTradesQueryKey = (params?: GetTradesParams) => {
+  return [`/api/trades`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetTradesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getTrades>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetTradesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getTrades>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetTradesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getTrades>>> = ({
+    signal,
+  }) => getTrades(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getTrades>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetTradesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getTrades>>
+>;
+export type GetTradesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get trade history
+ */
+
+export function useGetTrades<
+  TData = Awaited<ReturnType<typeof getTrades>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetTradesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getTrades>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetTradesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Execute a paper trade
+ */
+export const getExecuteTradeUrl = () => {
+  return `/api/trades`;
+};
+
+export const executeTrade = async (
+  executeTradeRequest: ExecuteTradeRequest,
+  options?: RequestInit,
+): Promise<TradeResult> => {
+  return customFetch<TradeResult>(getExecuteTradeUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(executeTradeRequest),
+  });
+};
+
+export const getExecuteTradeMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof executeTrade>>,
+    TError,
+    { data: BodyType<ExecuteTradeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof executeTrade>>,
+  TError,
+  { data: BodyType<ExecuteTradeRequest> },
+  TContext
+> => {
+  const mutationKey = ["executeTrade"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof executeTrade>>,
+    { data: BodyType<ExecuteTradeRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return executeTrade(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ExecuteTradeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof executeTrade>>
+>;
+export type ExecuteTradeMutationBody = BodyType<ExecuteTradeRequest>;
+export type ExecuteTradeMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Execute a paper trade
+ */
+export const useExecuteTrade = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof executeTrade>>,
+    TError,
+    { data: BodyType<ExecuteTradeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof executeTrade>>,
+  TError,
+  { data: BodyType<ExecuteTradeRequest> },
+  TContext
+> => {
+  return useMutation(getExecuteTradeMutationOptions(options));
+};
+
+/**
+ * @summary Close an open position
+ */
+export const getClosePositionUrl = (id: number) => {
+  return `/api/positions/${id}/close`;
+};
+
+export const closePosition = async (
+  id: number,
+  options?: RequestInit,
+): Promise<TradeResult> => {
+  return customFetch<TradeResult>(getClosePositionUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getClosePositionMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof closePosition>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof closePosition>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["closePosition"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof closePosition>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return closePosition(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ClosePositionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof closePosition>>
+>;
+
+export type ClosePositionMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Close an open position
+ */
+export const useClosePosition = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof closePosition>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof closePosition>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getClosePositionMutationOptions(options));
 };

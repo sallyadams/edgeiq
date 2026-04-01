@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Filter, Search, SlidersHorizontal, Lock, Zap, Bell, TrendingUp, ArrowRight, Loader2, Star, CheckCircle2, X } from "lucide-react";
 import { useGetSignals } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
+import { TradeModal } from "@/components/TradeModal";
 import { useI18n } from "@/i18n";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { useAuth } from "@workspace/replit-auth-web";
@@ -86,6 +87,7 @@ export default function Signals() {
   const [search, setSearch] = useState("");
   const [bannerVisible, setBannerVisible] = useState(true);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [tradeModal, setTradeModal] = useState<{ ticker: string; side: "buy" | "sell" } | null>(null);
   const { user } = useAuth();
   const isPro = user?.tier === "pro" || user?.tier === "elite";
   const { t } = useI18n();
@@ -207,6 +209,7 @@ export default function Signals() {
                   signal={signal}
                   lockInsight={!isPro}
                   onUpgradeClick={() => setUpgradeOpen(true)}
+                  onTradeClick={(ticker, side) => setTradeModal({ ticker, side })}
                 />
               </motion.div>
             ))}
@@ -236,6 +239,14 @@ export default function Signals() {
       </div>
 
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+
+      {tradeModal && (
+        <TradeModal
+          ticker={tradeModal.ticker}
+          defaultSide={tradeModal.side}
+          onClose={() => setTradeModal(null)}
+        />
+      )}
     </div>
   );
 }
