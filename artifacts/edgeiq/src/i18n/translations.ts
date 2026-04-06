@@ -104,6 +104,11 @@ type TranslationKeys = {
     latestSignal: string;
     noRecentSignals: string;
     analyze: string;
+    suggestedTickers: string;
+    addedToast: string;
+    addErrorToast: string;
+    removedToast: string;
+    removeErrorToast: string;
   };
   signalCard: {
     conviction: string;
@@ -229,6 +234,11 @@ type TranslationKeys = {
     tradeFailed: string;
     disclaimer: string;
     trade: string;
+    positionClosed: string;
+    closeError: string;
+    portfolioResetSuccess: string;
+    resetError: string;
+    tradeSuccess: string;
   };
   notFound: {
     title: string;
@@ -324,6 +334,11 @@ const en: TranslationKeys = {
     latestSignal: "Latest Signal",
     noRecentSignals: "No recent signals",
     analyze: "Analyze",
+    suggestedTickers: "Popular tickers to get started",
+    addedToast: "added to watchlist",
+    addErrorToast: "Failed to add ticker",
+    removedToast: "removed from watchlist",
+    removeErrorToast: "Failed to remove ticker",
   },
   signalCard: {
     conviction: "Conviction",
@@ -449,6 +464,11 @@ const en: TranslationKeys = {
     tradeFailed: "Trade execution failed",
     disclaimer: "Paper trading only. No real money is involved. Prices are simulated.",
     trade: "Trade",
+    positionClosed: "position closed",
+    closeError: "Failed to close position",
+    portfolioResetSuccess: "Portfolio reset to €10,000",
+    resetError: "Failed to reset portfolio",
+    tradeSuccess: "Trade executed successfully",
   },
   notFound: {
     title: "404 Page Not Found",
@@ -544,6 +564,11 @@ const fr: TranslationKeys = {
     latestSignal: "Dernier signal",
     noRecentSignals: "Aucun signal récent",
     analyze: "Analyser",
+    suggestedTickers: "Tickers populaires pour commencer",
+    addedToast: "ajouté à la liste",
+    addErrorToast: "Échec de l'ajout du ticker",
+    removedToast: "retiré de la liste",
+    removeErrorToast: "Échec de la suppression du ticker",
   },
   signalCard: {
     conviction: "Conviction",
@@ -669,6 +694,11 @@ const fr: TranslationKeys = {
     tradeFailed: "L'exécution du trade a échoué",
     disclaimer: "Trading papier uniquement. Aucun argent réel n'est impliqué. Les prix sont simulés.",
     trade: "Trader",
+    positionClosed: "position clôturée",
+    closeError: "Échec de la clôture de la position",
+    portfolioResetSuccess: "Portefeuille réinitialisé à 10 000 €",
+    resetError: "Échec de la réinitialisation du portefeuille",
+    tradeSuccess: "Trade exécuté avec succès",
   },
   notFound: {
     title: "404 Page non trouvée",
@@ -764,6 +794,11 @@ const de: TranslationKeys = {
     latestSignal: "Letztes Signal",
     noRecentSignals: "Keine aktuellen Signale",
     analyze: "Analysieren",
+    suggestedTickers: "Beliebte Ticker zum Starten",
+    addedToast: "zur Watchlist hinzugefügt",
+    addErrorToast: "Ticker konnte nicht hinzugefügt werden",
+    removedToast: "von der Watchlist entfernt",
+    removeErrorToast: "Ticker konnte nicht entfernt werden",
   },
   signalCard: {
     conviction: "\u00dcberzeugung",
@@ -889,6 +924,11 @@ const de: TranslationKeys = {
     tradeFailed: "Trade-Ausführung fehlgeschlagen",
     disclaimer: "Nur Paper Trading. Kein echtes Geld. Preise sind simuliert.",
     trade: "Handeln",
+    positionClosed: "Position geschlossen",
+    closeError: "Position konnte nicht geschlossen werden",
+    portfolioResetSuccess: "Portfolio auf 10.000 € zurückgesetzt",
+    resetError: "Portfolio konnte nicht zurückgesetzt werden",
+    tradeSuccess: "Trade erfolgreich ausgeführt",
   },
   notFound: {
     title: "404 Seite nicht gefunden",
@@ -984,6 +1024,11 @@ const es: TranslationKeys = {
     latestSignal: "Última señal",
     noRecentSignals: "Sin señales recientes",
     analyze: "Analizar",
+    suggestedTickers: "Tickers populares para empezar",
+    addedToast: "añadido a la lista",
+    addErrorToast: "Error al añadir el ticker",
+    removedToast: "eliminado de la lista",
+    removeErrorToast: "Error al eliminar el ticker",
   },
   signalCard: {
     conviction: "Convicci\u00f3n",
@@ -1109,6 +1154,11 @@ const es: TranslationKeys = {
     tradeFailed: "Fallo en la ejecución",
     disclaimer: "Solo trading de papel. No se usa dinero real. Los precios son simulados.",
     trade: "Operar",
+    positionClosed: "posición cerrada",
+    closeError: "Error al cerrar la posición",
+    portfolioResetSuccess: "Cartera reiniciada a 10.000 €",
+    resetError: "Error al reiniciar la cartera",
+    tradeSuccess: "Operación ejecutada con éxito",
   },
   notFound: {
     title: "404 Página no encontrada",
@@ -1204,6 +1254,11 @@ const nl: TranslationKeys = {
     latestSignal: "Laatste signaal",
     noRecentSignals: "Geen recente signalen",
     analyze: "Analyseren",
+    suggestedTickers: "Populaire tickers om te beginnen",
+    addedToast: "toegevoegd aan volglijst",
+    addErrorToast: "Ticker kon niet worden toegevoegd",
+    removedToast: "verwijderd uit volglijst",
+    removeErrorToast: "Ticker kon niet worden verwijderd",
   },
   signalCard: {
     conviction: "Overtuiging",
@@ -1329,6 +1384,11 @@ const nl: TranslationKeys = {
     tradeFailed: "Trade-uitvoering mislukt",
     disclaimer: "Alleen paper trading. Geen echt geld. Prijzen zijn gesimuleerd.",
     trade: "Handelen",
+    positionClosed: "positie gesloten",
+    closeError: "Positie kon niet worden gesloten",
+    portfolioResetSuccess: "Portefeuille gereset naar €10.000",
+    resetError: "Portefeuille kon niet worden gereset",
+    tradeSuccess: "Trade succesvol uitgevoerd",
   },
   notFound: {
     title: "404 Pagina niet gevonden",

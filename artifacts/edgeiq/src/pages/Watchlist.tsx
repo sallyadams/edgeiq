@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Star, Trash2, Plus, Search } from "lucide-react";
+import { Star, Trash2, Plus, Search, TrendingUp } from "lucide-react";
 import { useGetWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
+import { toast } from "@/hooks/use-toast";
+
+const SUGGESTED_TICKERS = ["NVDA", "SPY", "TSLA", "QQQ", "AAPL", "MSFT", "META", "AMZN"];
 
 export default function Watchlist() {
   const queryClient = useQueryClient();
@@ -15,19 +18,26 @@ export default function Watchlist() {
   const [newTicker, setNewTicker] = useState("");
   const { t } = useI18n();
 
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTicker.trim()) return;
-    
+  const addTicker = (ticker: string) => {
     addMutation.mutate(
-      { data: { ticker: newTicker.toUpperCase().trim() } },
+      { data: { ticker: ticker.toUpperCase().trim() } },
       {
         onSuccess: () => {
           setNewTicker("");
           queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
-        }
+          toast({ title: `${ticker.toUpperCase()} ${t.watchlist.addedToast}` });
+        },
+        onError: () => {
+          toast({ title: t.watchlist.addErrorToast, variant: "destructive" });
+        },
       }
     );
+  };
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTicker.trim()) return;
+    addTicker(newTicker);
   };
 
   const handleRemove = (ticker: string) => {
@@ -36,7 +46,11 @@ export default function Watchlist() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
-        }
+          toast({ title: `${ticker} ${t.watchlist.removedToast}` });
+        },
+        onError: () => {
+          toast({ title: t.watchlist.removeErrorToast, variant: "destructive" });
+        },
       }
     );
   };
@@ -77,10 +91,30 @@ export default function Watchlist() {
           ))}
         </div>
       ) : watchlist?.length === 0 ? (
-        <div className="text-center py-24 bg-card/30 rounded-3xl border border-border border-dashed">
+        <div className="text-center py-16 bg-card/30 rounded-3xl border border-border border-dashed">
           <Star className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-30" />
           <h3 className="text-xl font-bold text-foreground">{t.watchlist.empty}</h3>
           <p className="text-muted-foreground mt-2 max-w-md mx-auto">{t.watchlist.emptyHint}</p>
+          
+          <div className="mt-6">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-3">
+              <TrendingUp className="w-3.5 h-3.5 inline mr-1" />
+              {t.watchlist.suggestedTickers}
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+              {SUGGESTED_TICKERS.map((ticker) => (
+                <button
+                  key={ticker}
+                  onClick={() => addTicker(ticker)}
+                  disabled={addMutation.isPending}
+                  className="px-4 py-2 rounded-xl bg-secondary/50 border border-border/50 hover:border-primary/50 hover:bg-primary/10 text-sm font-mono font-bold transition-all hover:scale-105"
+                >
+                  <Plus className="w-3 h-3 inline mr-1 text-primary" />
+                  {ticker}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

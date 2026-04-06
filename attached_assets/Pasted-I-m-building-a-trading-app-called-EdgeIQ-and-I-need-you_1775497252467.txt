@@ -1,0 +1,111 @@
+I’m building a trading app called EdgeIQ and I need you to complete it into a real working MVP, not just a good-looking frontend.
+
+Current status:
+- The UI is already built
+- Pages exist: Dashboard, Signal Feed, Portfolio, Watchlist, Landing Page
+- Stripe checkout page exists in test mode
+- There is already a paywall / upgrade flow
+- Portfolio and signals UI are visible
+- App design is premium and should stay as-is
+
+What I need now is full product completion with working backend logic.
+
+Priority 1 — Authentication
+- Add full signup / login / logout flow
+- Use a secure and simple auth system, preferably Supabase
+- Keep session persistent
+- Protect private pages so only logged-in users can access Portfolio, Watchlist, and premium content
+- If user is not logged in, redirect them to login/signup
+
+Priority 2 — Subscription access control
+- Connect Stripe subscription properly
+- Implement webhook handling for successful subscription events
+- When payment succeeds, update the user record to premium/active
+- Link Stripe customer/email to the app user
+- Free users should only see limited signals
+- Premium users should unlock all signals, AI insights, and real-time alerts
+- After payment, premium access should activate automatically without manual intervention
+
+Priority 3 — Database and user data
+- Create proper database tables for:
+  - users
+  - subscriptions
+  - watchlist
+  - portfolio positions
+  - trade history
+  - signal interactions
+- Each logged-in user must only see their own data
+- Portfolio must be saved per user, not temporary demo-only state
+- Watchlist additions/removals must persist
+
+Priority 4 — Portfolio logic
+- Finish paper trading functionality
+- Allow user to buy and sell in demo mode
+- Save positions, trade history, unrealized P&L, realized P&L, balance, and performance
+- Make all calculations correct and dynamic
+- Add validation for quantities, ticker existence, and available balance
+- Portfolio reset should work safely with confirmation
+
+Priority 5 — Signal feed logic
+- Make signal feed dynamic instead of static/mock only
+- Each signal should include:
+  - ticker
+  - direction (bullish/bearish)
+  - conviction score
+  - timestamp
+  - category (options, insider, sentiment, unusual flow)
+  - short explanation
+- Add filtering by ticker and category
+- Add real “View Full Analysis” behavior
+- Add clean loading, empty, and error states
+
+Priority 6 — Watchlist
+- Make watchlist fully functional
+- Users should be able to add and remove tickers
+- Watchlist should persist in database
+- Show related signals for watched tickers
+- Add a good empty state with suggested tickers like NVDA, SPY, TSLA, QQQ
+
+Priority 7 — UX and product polish
+- Keep the existing premium dark design
+- Fix anything broken in navigation or routing
+- Make the app feel production-ready
+- Replace fake/scary demo portfolio numbers with more neutral or realistic starter values
+- Improve paywall UX so users can preview premium value before hitting the upgrade limit
+- Add proper success/error toasts and feedback everywhere
+
+Priority 8 — Landing page and conversion
+- Keep the homepage premium and high-converting
+- Make sure CTA buttons lead to correct flows:
+  - Try free
+  - Sign up
+  - Upgrade
+- Make pricing clear
+- Make the premium value proposition consistent across the app
+
+Priority 9 — Deployment readiness
+- Prepare the app for production deployment
+- Clean environment variable setup
+- Make Stripe, auth, and database work correctly in deployed mode
+- Remove test-only blockers
+- Ensure there are no broken links or dead-end pages
+
+Technical expectations:
+- Use clean architecture
+- Keep code modular and maintainable
+- Do not break the current design system
+- Reuse existing UI where possible
+- Add comments where needed
+- Test each flow end-to-end
+
+Main goal:
+I need this app to behave like a real trading SaaS MVP:
+- user signs up
+- user logs in
+- user sees limited free experience
+- user upgrades with Stripe
+- premium unlocks automatically
+- user can manage watchlist and paper portfolio
+- all data is saved correctly
+
+Please complete the missing backend, integrations, and logic step by step, and leave the app in a fully working state.

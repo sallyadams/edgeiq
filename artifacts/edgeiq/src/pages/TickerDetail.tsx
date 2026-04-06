@@ -8,14 +8,19 @@ import {
 } from "recharts";
 import { useGetMarketQuote, useGetTickerSignalHistory } from "@workspace/api-client-react";
 import { SignalCard } from "@/components/SignalCard";
+import { TradeModal } from "@/components/TradeModal";
 import { formatCurrency, formatPercent, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/i18n";
+import { useAuth } from "@workspace/replit-auth-web";
 
 export default function TickerDetail() {
   const { symbol } = useParams();
   const ticker = symbol?.toUpperCase() || "";
   const { t } = useI18n();
+  const { user } = useAuth();
+  const isPro = user?.tier === "pro" || user?.tier === "elite";
+  const [tradeModal, setTradeModal] = React.useState<{ ticker: string; side: "buy" | "sell" } | null>(null);
   
   const { data: quote, isLoading: quoteLoading } = useGetMarketQuote(ticker);
   const { data: history, isLoading: historyLoading } = useGetTickerSignalHistory(ticker);
@@ -151,7 +156,12 @@ export default function TickerDetail() {
                   transition={{ delay: i * 0.1 }}
                   key={signal.id}
                 >
-                  <SignalCard signal={signal} compact />
+                  <SignalCard
+                    signal={signal}
+                    compact
+                    lockInsight={!isPro}
+                    onTradeClick={(ticker, side) => setTradeModal({ ticker, side })}
+                  />
                 </motion.div>
               ))
             ) : (
@@ -162,6 +172,14 @@ export default function TickerDetail() {
           </div>
         </div>
       </div>
+
+      {tradeModal && (
+        <TradeModal
+          ticker={tradeModal.ticker}
+          defaultSide={tradeModal.side}
+          onClose={() => setTradeModal(null)}
+        />
+      )}
     </div>
   );
 }

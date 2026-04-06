@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { useExecuteTrade } from "@workspace/api-client-react";
-import { useGetMarketQuote } from "@workspace/api-client-react";
+import { useExecuteTrade, useGetMarketQuote } from "@workspace/api-client-react";
 import { useI18n } from "@/i18n";
+import { toast } from "@/hooks/use-toast";
 
 interface TradeModalProps {
   ticker: string;
@@ -40,6 +40,7 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
         onSuccess: (result) => {
           if (result.success) {
             setSuccessMsg(result.message);
+            toast({ title: `${side === "buy" ? t.trading.buy : t.trading.sell} ${qty} ${ticker} — ${t.trading.tradeSuccess}` });
             setTimeout(() => {
               onSuccess?.();
               onClose();
@@ -51,6 +52,7 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
         onError: (err: unknown) => {
           const message = err instanceof Error ? err.message : t.trading.tradeFailed;
           setError(message);
+          toast({ title: t.trading.tradeFailed, variant: "destructive" });
         },
       },
     );

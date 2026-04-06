@@ -23,6 +23,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/i18n";
 import { TradeModal } from "@/components/TradeModal";
+import { toast } from "@/hooks/use-toast";
 
 export default function Portfolio() {
   const { t } = useI18n();
@@ -43,11 +44,17 @@ export default function Portfolio() {
     queryClient.invalidateQueries({ queryKey: ["/api/trades"] });
   };
 
-  const handleClosePosition = (id: number) => {
+  const handleClosePosition = (id: number, ticker?: string) => {
     closePosition.mutate(
       { id },
       {
-        onSuccess: () => refreshAll(),
+        onSuccess: () => {
+          refreshAll();
+          toast({ title: `${ticker ? ticker + " " : ""}${t.trading.positionClosed}` });
+        },
+        onError: () => {
+          toast({ title: t.trading.closeError, variant: "destructive" });
+        },
       },
     );
   };
@@ -57,6 +64,10 @@ export default function Portfolio() {
       onSuccess: () => {
         refreshAll();
         setShowResetConfirm(false);
+        toast({ title: t.trading.portfolioResetSuccess });
+      },
+      onError: () => {
+        toast({ title: t.trading.resetError, variant: "destructive" });
       },
     });
   };
@@ -234,7 +245,7 @@ export default function Portfolio() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleClosePosition(pos.id)}
+                          onClick={() => handleClosePosition(pos.id, pos.ticker)}
                           disabled={closePosition.isPending}
                           className="text-destructive border-destructive/30 hover:bg-destructive/10"
                         >

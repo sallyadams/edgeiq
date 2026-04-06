@@ -6,6 +6,7 @@ import { SignalCard } from "@/components/SignalCard";
 import { FeaturedSignal } from "@/components/FeaturedSignal";
 import { LiveActivityTicker } from "@/components/LiveActivityTicker";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { TradeModal } from "@/components/TradeModal";
 import { useAuth } from "@workspace/replit-auth-web";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const isPro = user?.tier === "pro" || user?.tier === "elite";
   const [upgradeOpen, setUpgradeOpen] = React.useState(false);
+  const [tradeModal, setTradeModal] = React.useState<{ ticker: string; side: "buy" | "sell" } | null>(null);
   const featuredSignal = topSignals?.[0];
 
   React.useEffect(() => {
@@ -128,6 +130,7 @@ export default function Dashboard() {
                     signal={signal}
                     lockInsight={!isPro}
                     onUpgradeClick={() => setUpgradeOpen(true)}
+                    onTradeClick={(ticker, side) => setTradeModal({ ticker, side })}
                   />
                 </motion.div>
               );
@@ -212,6 +215,14 @@ export default function Dashboard() {
       </div>
 
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+
+      {tradeModal && (
+        <TradeModal
+          ticker={tradeModal.ticker}
+          defaultSide={tradeModal.side}
+          onClose={() => setTradeModal(null)}
+        />
+      )}
     </div>
   );
 }
