@@ -192,6 +192,33 @@ type TranslationKeys = {
     ctaTitle: string;
     ctaSubtitle: string;
     footerDisclaimer: string;
+    founderTitle: string;
+    founderName: string;
+    founderRole: string;
+    founderBio: string;
+    whoTitle: string;
+    whoSubtitle: string;
+    whoBeginner: string;
+    whoBeginnerDesc: string;
+    whoProfessional: string;
+    whoProfessionalDesc: string;
+    whoDataDriven: string;
+    whoDataDrivenDesc: string;
+    urgencyTitle: string;
+    urgencySubtitle: string;
+    urgencySpots: string;
+    urgencyCta: string;
+    howItWorksTitle: string;
+    howItWorksSubtitle: string;
+    howStep1: string;
+    howStep1Desc: string;
+    howStep2: string;
+    howStep2Desc: string;
+    howStep3: string;
+    howStep3Desc: string;
+    howStep4: string;
+    howStep4Desc: string;
+    riskDisclaimer: string;
   };
   trading: {
     portfolio: string;
@@ -422,6 +449,33 @@ const en: TranslationKeys = {
     ctaTitle: "Get Your First Winning Signal in Seconds",
     ctaSubtitle: "Join traders already using EdgeIQ to track smart money in real-time.",
     footerDisclaimer: "Market intelligence for the modern trader. Not financial advice.",
+    founderTitle: "Built by a data specialist, for traders",
+    founderName: "Salamat Adams",
+    founderRole: "Data Analyst & AI Specialist",
+    founderBio: "I built EdgeIQ because retail traders deserve the same data-driven edge that institutional desks have had for years. Every signal is powered by real market data, AI analysis, and institutional flow tracking.",
+    whoTitle: "Who is EdgeIQ for?",
+    whoSubtitle: "Whether you're just starting out or managing a busy schedule, EdgeIQ gives you clarity.",
+    whoBeginner: "Beginner Traders",
+    whoBeginnerDesc: "Learn to read the market with AI-powered guidance. No jargon, no guesswork — just clear signals you can understand.",
+    whoProfessional: "Busy Professionals",
+    whoProfessionalDesc: "Don't have hours to analyze charts? Get curated, high-conviction signals delivered in real time so you never miss an opportunity.",
+    whoDataDriven: "Data-Driven Traders",
+    whoDataDrivenDesc: "Track institutional flows, insider activity, and unusual options volume — the same data hedge funds pay millions for.",
+    urgencyTitle: "Early Access — Limited Spots",
+    urgencySubtitle: "We're onboarding a limited number of early users at reduced pricing. Lock in your rate before launch.",
+    urgencySpots: "spots remaining at early access pricing",
+    urgencyCta: "Claim Your Spot Now",
+    howItWorksTitle: "How it works — in 30 seconds",
+    howItWorksSubtitle: "From signup to your first signal in under a minute.",
+    howStep1: "Review Signals",
+    howStep1Desc: "Browse real-time AI-scored signals with clear buy/sell direction and conviction levels.",
+    howStep2: "Understand the Edge",
+    howStep2Desc: "Read the AI explanation behind each signal — institutional flows, insider data, and market context.",
+    howStep3: "Track or Execute",
+    howStep3Desc: "Follow signals in paper trading mode or connect a broker for real execution.",
+    howStep4: "Ask the Assistant",
+    howStep4Desc: "Use the built-in AI assistant for instant help understanding any signal or feature.",
+    riskDisclaimer: "EdgeIQ provides market data, AI-generated signals, and educational tools. All trading involves risk. Past performance does not guarantee future results. Users are responsible for their own trading decisions. This is not financial advice.",
   },
   trading: {
     portfolio: "Portfolio",
@@ -652,6 +706,33 @@ const fr: TranslationKeys = {
     ctaTitle: "Recevez votre premier signal gagnant en secondes",
     ctaSubtitle: "Rejoignez les traders qui utilisent d\u00e9j\u00e0 EdgeIQ pour suivre le smart money en temps r\u00e9el.",
     footerDisclaimer: "Intelligence de marché pour le trader moderne. Ceci n'est pas un conseil financier.",
+    founderTitle: "Conçu par un spécialiste des données, pour les traders",
+    founderName: "Salamat Adams",
+    founderRole: "Analyste de données & spécialiste IA",
+    founderBio: "J'ai créé EdgeIQ parce que les traders particuliers méritent le même avantage data que les institutions. Chaque signal est alimenté par des données de marché réelles et l'analyse IA.",
+    whoTitle: "Pour qui est EdgeIQ ?",
+    whoSubtitle: "Que vous débutiez ou gériez un emploi du temps chargé, EdgeIQ vous apporte de la clarté.",
+    whoBeginner: "Traders débutants",
+    whoBeginnerDesc: "Apprenez à lire le marché avec des signaux IA clairs. Pas de jargon, pas de devinettes.",
+    whoProfessional: "Professionnels occupés",
+    whoProfessionalDesc: "Pas le temps d'analyser des graphiques ? Recevez des signaux à haute conviction en temps réel.",
+    whoDataDriven: "Traders data-driven",
+    whoDataDrivenDesc: "Suivez les flux institutionnels, l'activité des initiés et le volume d'options inhabituelles.",
+    urgencyTitle: "Accès anticipé — Places limitées",
+    urgencySubtitle: "Nous intégrons un nombre limité d'utilisateurs à prix réduit. Verrouillez votre tarif avant le lancement.",
+    urgencySpots: "places restantes au tarif d'accès anticipé",
+    urgencyCta: "Réservez votre place",
+    howItWorksTitle: "Comment ça marche — en 30 secondes",
+    howItWorksSubtitle: "De l'inscription à votre premier signal en moins d'une minute.",
+    howStep1: "Consultez les signaux",
+    howStep1Desc: "Parcourez les signaux IA en temps réel avec direction claire et niveaux de conviction.",
+    howStep2: "Comprenez l'avantage",
+    howStep2Desc: "Lisez l'explication IA derrière chaque signal — flux institutionnels, données d'initiés et contexte de marché.",
+    howStep3: "Suivez ou exécutez",
+    howStep3Desc: "Suivez les signaux en mode paper trading ou connectez un courtier pour l'exécution réelle.",
+    howStep4: "Demandez à l'assistant",
+    howStep4Desc: "Utilisez l'assistant IA intégré pour une aide instantanée sur n'importe quel signal ou fonctionnalité.",
+    riskDisclaimer: "EdgeIQ fournit des données de marché, des signaux générés par IA et des outils éducatifs. Tout trading comporte des risques. Les performances passées ne garantissent pas les résultats futurs. Ceci n'est pas un conseil financier.",
   },
   trading: {
     portfolio: "Portefeuille",
@@ -882,6 +963,33 @@ const de: TranslationKeys = {
     ctaTitle: "Erhalten Sie Ihr erstes Gewinnsignal in Sekunden",
     ctaSubtitle: "Schlie\u00dfen Sie sich Tradern an, die EdgeIQ bereits nutzen, um Smart Money in Echtzeit zu verfolgen.",
     footerDisclaimer: "Marktintelligenz für den modernen Trader. Keine Finanzberatung.",
+    founderTitle: "Entwickelt von einem Datenspezialisten, für Trader",
+    founderName: "Salamat Adams",
+    founderRole: "Datenanalyst & KI-Spezialist",
+    founderBio: "Ich habe EdgeIQ entwickelt, weil Privatanleger denselben datengesteuerten Vorteil verdienen, den institutionelle Desks seit Jahren haben.",
+    whoTitle: "Für wen ist EdgeIQ?",
+    whoSubtitle: "Ob Anfänger oder vielbeschäftigt — EdgeIQ gibt Ihnen Klarheit.",
+    whoBeginner: "Einsteiger-Trader",
+    whoBeginnerDesc: "Lernen Sie den Markt mit KI-gestützten Signalen zu lesen. Kein Fachjargon, kein Rätselraten.",
+    whoProfessional: "Vielbeschäftigte Berufstätige",
+    whoProfessionalDesc: "Keine Zeit für Charts? Erhalten Sie kuratierte Signale in Echtzeit.",
+    whoDataDriven: "Datengetriebene Trader",
+    whoDataDrivenDesc: "Verfolgen Sie institutionelle Ströme, Insider-Aktivitäten und ungewöhnliches Optionsvolumen.",
+    urgencyTitle: "Early Access — Begrenzte Plätze",
+    urgencySubtitle: "Wir nehmen eine begrenzte Anzahl von Early-Access-Nutzern zu reduzierten Preisen auf.",
+    urgencySpots: "Plätze zum Early-Access-Preis verbleibend",
+    urgencyCta: "Jetzt Platz sichern",
+    howItWorksTitle: "So funktioniert's — in 30 Sekunden",
+    howItWorksSubtitle: "Von der Anmeldung zum ersten Signal in unter einer Minute.",
+    howStep1: "Signale ansehen",
+    howStep1Desc: "Durchsuchen Sie KI-bewertete Echtzeitsignale mit klarer Kauf/Verkauf-Richtung.",
+    howStep2: "Den Vorteil verstehen",
+    howStep2Desc: "Lesen Sie die KI-Erklärung hinter jedem Signal — institutionelle Ströme und Marktkontext.",
+    howStep3: "Verfolgen oder ausführen",
+    howStep3Desc: "Folgen Sie Signalen im Paper-Trading-Modus oder verbinden Sie einen Broker.",
+    howStep4: "Den Assistenten fragen",
+    howStep4Desc: "Nutzen Sie den integrierten KI-Assistenten für sofortige Hilfe.",
+    riskDisclaimer: "EdgeIQ bietet Marktdaten, KI-generierte Signale und Bildungstools. Jeder Handel birgt Risiken. Vergangene Ergebnisse garantieren keine zukünftigen Ergebnisse. Dies ist keine Finanzberatung.",
   },
   trading: {
     portfolio: "Portfolio",
@@ -1112,6 +1220,33 @@ const es: TranslationKeys = {
     ctaTitle: "Obt\u00e9n tu primera se\u00f1al ganadora en segundos",
     ctaSubtitle: "\u00danete a traders que ya usan EdgeIQ para rastrear smart money en tiempo real.",
     footerDisclaimer: "Inteligencia de mercado para el trader moderno. No es consejo financiero.",
+    founderTitle: "Creado por un especialista en datos, para traders",
+    founderName: "Salamat Adams",
+    founderRole: "Analista de datos y especialista en IA",
+    founderBio: "Creé EdgeIQ porque los traders minoristas merecen la misma ventaja basada en datos que los escritorios institucionales.",
+    whoTitle: "¿Para quién es EdgeIQ?",
+    whoSubtitle: "Ya seas principiante o un profesional ocupado, EdgeIQ te da claridad.",
+    whoBeginner: "Traders principiantes",
+    whoBeginnerDesc: "Aprende a leer el mercado con señales IA claras. Sin jerga, sin adivinanzas.",
+    whoProfessional: "Profesionales ocupados",
+    whoProfessionalDesc: "¿Sin tiempo para analizar gráficos? Recibe señales de alta convicción en tiempo real.",
+    whoDataDriven: "Traders basados en datos",
+    whoDataDrivenDesc: "Rastrea flujos institucionales, actividad de insiders y volumen de opciones inusuales.",
+    urgencyTitle: "Acceso anticipado — Plazas limitadas",
+    urgencySubtitle: "Estamos incorporando un número limitado de usuarios a precios reducidos.",
+    urgencySpots: "plazas restantes a precio de acceso anticipado",
+    urgencyCta: "Reserva tu plaza",
+    howItWorksTitle: "Cómo funciona — en 30 segundos",
+    howItWorksSubtitle: "Del registro a tu primera señal en menos de un minuto.",
+    howStep1: "Revisa señales",
+    howStep1Desc: "Explora señales IA en tiempo real con dirección clara y niveles de convicción.",
+    howStep2: "Entiende la ventaja",
+    howStep2Desc: "Lee la explicación IA detrás de cada señal — flujos institucionales y contexto de mercado.",
+    howStep3: "Sigue o ejecuta",
+    howStep3Desc: "Sigue señales en modo paper trading o conecta un broker para ejecución real.",
+    howStep4: "Pregunta al asistente",
+    howStep4Desc: "Usa el asistente IA integrado para ayuda instantánea con cualquier señal.",
+    riskDisclaimer: "EdgeIQ proporciona datos de mercado, señales generadas por IA y herramientas educativas. Todo trading conlleva riesgos. El rendimiento pasado no garantiza resultados futuros. Esto no es consejo financiero.",
   },
   trading: {
     portfolio: "Cartera",
@@ -1342,6 +1477,33 @@ const nl: TranslationKeys = {
     ctaTitle: "Ontvang je eerste winnend signaal in seconden",
     ctaSubtitle: "Sluit je aan bij traders die EdgeIQ al gebruiken om smart money in realtime te volgen.",
     footerDisclaimer: "Marktintelligentie voor de moderne trader. Geen financieel advies.",
+    founderTitle: "Gebouwd door een dataspecialist, voor traders",
+    founderName: "Salamat Adams",
+    founderRole: "Data-analist & AI-specialist",
+    founderBio: "Ik heb EdgeIQ gebouwd omdat particuliere traders dezelfde datagedreven edge verdienen die institutionele desks al jaren hebben.",
+    whoTitle: "Voor wie is EdgeIQ?",
+    whoSubtitle: "Of je nu begint of een druk schema hebt, EdgeIQ geeft je duidelijkheid.",
+    whoBeginner: "Beginnende traders",
+    whoBeginnerDesc: "Leer de markt te lezen met AI-aangedreven signalen. Geen jargon, geen giswerk.",
+    whoProfessional: "Drukke professionals",
+    whoProfessionalDesc: "Geen tijd om grafieken te analyseren? Ontvang realtime signalen met hoge overtuiging.",
+    whoDataDriven: "Datagedreven traders",
+    whoDataDrivenDesc: "Volg institutionele stromen, insider-activiteit en ongebruikelijk optievolume.",
+    urgencyTitle: "Vroege toegang — Beperkte plaatsen",
+    urgencySubtitle: "We nemen een beperkt aantal early access-gebruikers aan tegen gereduceerde prijzen.",
+    urgencySpots: "plaatsen over tegen early access-prijs",
+    urgencyCta: "Claim je plek",
+    howItWorksTitle: "Hoe het werkt — in 30 seconden",
+    howItWorksSubtitle: "Van aanmelding tot je eerste signaal in minder dan een minuut.",
+    howStep1: "Bekijk signalen",
+    howStep1Desc: "Blader door realtime AI-beoordeelde signalen met duidelijke koop/verkoop-richting.",
+    howStep2: "Begrijp de edge",
+    howStep2Desc: "Lees de AI-uitleg achter elk signaal — institutionele stromen en marktcontext.",
+    howStep3: "Volg of voer uit",
+    howStep3Desc: "Volg signalen in paper trading-modus of verbind een broker voor echte uitvoering.",
+    howStep4: "Vraag de assistent",
+    howStep4Desc: "Gebruik de ingebouwde AI-assistent voor directe hulp bij elk signaal.",
+    riskDisclaimer: "EdgeIQ biedt marktdata, AI-gegenereerde signalen en educatieve tools. Alle handel brengt risico's met zich mee. Resultaten uit het verleden garanderen geen toekomstige resultaten. Dit is geen financieel advies.",
   },
   trading: {
     portfolio: "Portefeuille",

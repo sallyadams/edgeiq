@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check, Globe, X as XIcon } from "lucide-react";
+import {
+  ArrowRight, TrendingUp, Shield, Zap, BarChart2, Activity, Eye, Check,
+  Globe, X as XIcon, Users, Briefcase, BookOpen, Clock, AlertTriangle,
+  MessageCircle, Target
+} from "lucide-react";
 import { useI18n, LOCALE_LABELS, LOCALE_FLAGS, type Locale } from "@/i18n";
 import { useAuth } from "@workspace/replit-auth-web";
 
@@ -64,6 +68,19 @@ export default function Landing() {
     { value: "94%", label: t.landing.statsAccuracy },
     { value: "$2.1B+", label: t.landing.statsFlows },
     { value: "<500ms", label: t.landing.statsLatency },
+  ];
+
+  const WHO_CARDS = [
+    { icon: BookOpen, title: t.landing.whoBeginner, description: t.landing.whoBeginnerDesc, color: "text-emerald-400", border: "border-emerald-400/20" },
+    { icon: Briefcase, title: t.landing.whoProfessional, description: t.landing.whoProfessionalDesc, color: "text-primary", border: "border-primary/20" },
+    { icon: Target, title: t.landing.whoDataDriven, description: t.landing.whoDataDrivenDesc, color: "text-violet-400", border: "border-violet-400/20" },
+  ];
+
+  const HOW_STEPS = [
+    { num: "01", title: t.landing.howStep1, desc: t.landing.howStep1Desc, icon: Activity },
+    { num: "02", title: t.landing.howStep2, desc: t.landing.howStep2Desc, icon: Eye },
+    { num: "03", title: t.landing.howStep3, desc: t.landing.howStep3Desc, icon: TrendingUp },
+    { num: "04", title: t.landing.howStep4, desc: t.landing.howStep4Desc, icon: MessageCircle },
   ];
 
   type FreeTier = { kind: "free"; name: string; price: string; period: string; description: string; highlighted: false; cta: string; ctaHref: string; features: string[]; limitations: string[] };
@@ -223,6 +240,7 @@ export default function Landing() {
         </div>
       </header>
 
+      {/* HERO */}
       <section className="relative flex-1 flex flex-col items-center justify-center text-center px-6 py-32 overflow-hidden">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/15 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -283,6 +301,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* STATS */}
       <section className="border-y border-border/40 bg-card/30 backdrop-blur py-10">
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {STATS.map((stat, i) => (
@@ -299,7 +318,44 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
       <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              {t.landing.howItWorksTitle}
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              {t.landing.howItWorksSubtitle}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {HOW_STEPS.map((step, i) => (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * i + 0.2 }}
+                className="relative text-center group"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                  <step.icon className="w-6 h-6 text-primary" />
+                </div>
+                <div className="text-xs font-bold text-primary/60 mb-2 tracking-wider">{step.num}</div>
+                <h3 className="text-base font-display font-bold mb-2">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                {i < HOW_STEPS.length - 1 && (
+                  <div className="hidden md:block absolute top-7 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-px bg-gradient-to-r from-primary/30 to-transparent" />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-24 px-6 bg-card/20">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
@@ -333,7 +389,65 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* WHO IS THIS FOR */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              {t.landing.whoTitle}
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              {t.landing.whoSubtitle}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {WHO_CARDS.map((card, i) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * i + 0.2 }}
+                className={`rounded-2xl border ${card.border} bg-card/40 p-8 text-center hover:bg-card/60 transition-all duration-300`}
+              >
+                <div className={`w-14 h-14 rounded-2xl bg-card border border-border/50 flex items-center justify-center mx-auto mb-5 ${card.color}`}>
+                  <card.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-display font-bold mb-3">{card.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{card.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FOUNDER TRUST */}
       <section className="py-24 px-6 bg-card/20">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl border border-border/50 bg-card/60 backdrop-blur-xl p-10 md:p-14"
+          >
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center text-primary-foreground font-bold text-2xl shadow-xl flex-shrink-0">
+                SA
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-xs font-bold text-primary uppercase tracking-wider mb-2">{t.landing.founderTitle}</p>
+                <h3 className="text-xl font-display font-bold mb-1">{t.landing.founderName}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{t.landing.founderRole}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed italic">
+                  "{t.landing.founderBio}"
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
@@ -352,6 +466,49 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* URGENCY / EARLY ACCESS */}
+      <section className="py-20 px-6 bg-card/20">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl border border-amber-500/20 bg-gradient-to-b from-amber-500/5 to-transparent p-12"
+          >
+            <Clock className="w-10 h-10 text-amber-400 mx-auto mb-5" />
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              {t.landing.urgencyTitle}
+            </h2>
+            <p className="text-muted-foreground text-lg mb-6 max-w-lg mx-auto">
+              {t.landing.urgencySubtitle}
+            </p>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-semibold mb-8">
+              <Users className="w-4 h-4" />
+              47 {t.landing.urgencySpots}
+            </div>
+            <div>
+              {isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+                >
+                  {t.nav.dashboard}
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              ) : (
+                <button
+                  onClick={login}
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 duration-200"
+                >
+                  {t.landing.urgencyCta}
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center relative">
           <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-3xl" />
@@ -384,9 +541,18 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-border/40 py-8 px-6 text-center text-sm text-muted-foreground">
-        <span className="font-display font-bold text-foreground">Edge<span className="text-primary">IQ</span></span>
-        {" "}&mdash; {t.landing.footerDisclaimer}
+      {/* FOOTER */}
+      <footer className="border-t border-border/40 py-8 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-4">
+            <span className="font-display font-bold text-foreground">Edge<span className="text-primary">IQ</span></span>
+            {" "}&mdash; {t.landing.footerDisclaimer}
+          </div>
+          <div className="flex items-start gap-2 text-xs text-muted-foreground/60 max-w-2xl mx-auto text-center">
+            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+            <p>{t.landing.riskDisclaimer}</p>
+          </div>
+        </div>
       </footer>
     </div>
   );

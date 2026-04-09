@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
+import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Loader2, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useExecuteTrade, useGetMarketQuote } from "@workspace/api-client-react";
 import { useI18n } from "@/i18n";
 import { toast } from "@/hooks/use-toast";
+import { BrokerConnect } from "./BrokerConnect";
 
 interface TradeModalProps {
   ticker: string;
@@ -18,6 +19,7 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
   const [quantity, setQuantity] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [brokerOpen, setBrokerOpen] = useState(false);
   const { t } = useI18n();
 
   const { data: quote } = useGetMarketQuote(ticker);
@@ -185,10 +187,22 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
           </Button>
         </div>
 
+        <div className="px-5 pb-2">
+          <button
+            onClick={() => setBrokerOpen(true)}
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all border border-transparent hover:border-border/40"
+          >
+            <Link2 className="w-3.5 h-3.5" />
+            Connect broker for live trading
+          </button>
+        </div>
+
         <div className="px-5 pb-4 text-center">
           <p className="text-[10px] text-muted-foreground/60">{t.trading.disclaimer}</p>
         </div>
       </div>
+
+      <BrokerConnect open={brokerOpen} onClose={() => setBrokerOpen(false)} />
     </div>
   );
 }
