@@ -21,6 +21,17 @@ const PLANS = {
   },
 };
 
+function getBaseUrl(): string {
+  if (process.env.REPLIT_DEPLOYMENT === "1" && process.env.REPLIT_DOMAINS) {
+    const primaryDomain = process.env.REPLIT_DOMAINS.split(",")[0];
+    return `https://${primaryDomain}`;
+  }
+  if (process.env.REPLIT_DEV_DOMAIN) {
+    return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  }
+  return process.env.APP_URL || "http://localhost";
+}
+
 router.get("/checkout/config", async (_req, res) => {
   try {
     const publishableKey = await getStripePublishableKey();
@@ -47,14 +58,15 @@ router.post("/checkout/create-session", async (req: Request, res: Response) => {
     const plan: "early" | "pro" | "elite" = planParam;
     const planConfig = PLANS[plan];
 
-    const baseUrl = process.env.REPLIT_DEV_DOMAIN
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-      : process.env.APP_URL || "http://localhost";
+    const baseUrl = getBaseUrl();
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: req.user!.email ?? undefined,
       metadata: { plan, userId: req.user!.id },
+      subscription_data: {
+        metadata: { plan, userId: req.user!.id },
+      },
       line_items: [
         {
           price_data: {
@@ -69,8 +81,8 @@ router.post("/checkout/create-session", async (req: Request, res: Response) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/signals?upgraded=true`,
-      cancel_url: `${baseUrl}/signals`,
+      success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/payment/cancel`,
     });
 
     res.json({ url: session.url });

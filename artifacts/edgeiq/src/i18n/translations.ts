@@ -271,6 +271,22 @@ type TranslationKeys = {
     resetError: string;
     tradeSuccess: string;
   };
+  payment: {
+    successTitle: string;
+    successSubtitle: string;
+    featureUnlocked1: string;
+    featureUnlocked2: string;
+    featureUnlocked3: string;
+    goToSignals: string;
+    goToDashboard: string;
+    receiptNote: string;
+    cancelTitle: string;
+    cancelSubtitle: string;
+    cancelReassurance: string;
+    backToHome: string;
+    browseFree: string;
+    cancelNote: string;
+  };
   notFound: {
     title: string;
     message: string;
@@ -531,6 +547,22 @@ const en: TranslationKeys = {
     portfolioResetSuccess: "Portfolio reset to €10,000",
     resetError: "Failed to reset portfolio",
     tradeSuccess: "Trade executed successfully",
+  },
+  payment: {
+    successTitle: "Payment Successful!",
+    successSubtitle: "Your account has been upgraded. All premium features are now unlocked.",
+    featureUnlocked1: "Unlimited real-time signals across all tickers",
+    featureUnlocked2: "AI-powered conviction scoring and insights",
+    featureUnlocked3: "Priority alerts and dark pool data access",
+    goToSignals: "View All Signals",
+    goToDashboard: "Go to Dashboard",
+    receiptNote: "A confirmation receipt has been sent to your email address.",
+    cancelTitle: "Payment Cancelled",
+    cancelSubtitle: "No charges were made to your account.",
+    cancelReassurance: "Your free access remains active. You can upgrade anytime from the Signal Feed or Dashboard.",
+    backToHome: "Back to Home",
+    browseFree: "Continue with Free Access",
+    cancelNote: "If you experienced an issue during checkout, please try again or contact support.",
   },
   notFound: {
     title: "404 Page Not Found",
@@ -793,6 +825,22 @@ const fr: TranslationKeys = {
     resetError: "Échec de la réinitialisation du portefeuille",
     tradeSuccess: "Trade exécuté avec succès",
   },
+  payment: {
+    successTitle: "Paiement réussi !",
+    successSubtitle: "Votre compte a été mis à niveau. Toutes les fonctionnalités premium sont débloquées.",
+    featureUnlocked1: "Signaux illimités en temps réel sur tous les tickers",
+    featureUnlocked2: "Scores de conviction et analyses IA",
+    featureUnlocked3: "Alertes prioritaires et données dark pool",
+    goToSignals: "Voir tous les signaux",
+    goToDashboard: "Aller au tableau de bord",
+    receiptNote: "Un reçu de confirmation a été envoyé à votre adresse e-mail.",
+    cancelTitle: "Paiement annulé",
+    cancelSubtitle: "Aucun frais n'a été débité de votre compte.",
+    cancelReassurance: "Votre accès gratuit reste actif. Vous pouvez passer au premium à tout moment.",
+    backToHome: "Retour à l'accueil",
+    browseFree: "Continuer avec l'accès gratuit",
+    cancelNote: "Si vous avez rencontré un problème lors du paiement, veuillez réessayer ou contacter le support.",
+  },
   notFound: {
     title: "404 Page non trouvée",
     message: "La page que vous cherchez n'existe pas.",
@@ -1053,6 +1101,22 @@ const de: TranslationKeys = {
     portfolioResetSuccess: "Portfolio auf 10.000 € zurückgesetzt",
     resetError: "Portfolio konnte nicht zurückgesetzt werden",
     tradeSuccess: "Trade erfolgreich ausgeführt",
+  },
+  payment: {
+    successTitle: "Zahlung erfolgreich!",
+    successSubtitle: "Ihr Konto wurde aufgewertet. Alle Premium-Funktionen sind freigeschaltet.",
+    featureUnlocked1: "Unbegrenzte Echtzeit-Signale für alle Ticker",
+    featureUnlocked2: "KI-gestützte Überzeugungsbewertung und Analysen",
+    featureUnlocked3: "Prioritätsbenachrichtigungen und Dark-Pool-Daten",
+    goToSignals: "Alle Signale anzeigen",
+    goToDashboard: "Zum Dashboard",
+    receiptNote: "Eine Bestätigungsquittung wurde an Ihre E-Mail-Adresse gesendet.",
+    cancelTitle: "Zahlung abgebrochen",
+    cancelSubtitle: "Es wurden keine Gebühren von Ihrem Konto abgebucht.",
+    cancelReassurance: "Ihr kostenloser Zugang bleibt aktiv. Sie können jederzeit upgraden.",
+    backToHome: "Zurück zur Startseite",
+    browseFree: "Mit kostenlosem Zugang fortfahren",
+    cancelNote: "Wenn beim Checkout ein Problem aufgetreten ist, versuchen Sie es erneut oder kontaktieren Sie den Support.",
   },
   notFound: {
     title: "404 Seite nicht gefunden",
@@ -1315,6 +1379,22 @@ const es: TranslationKeys = {
     resetError: "Error al reiniciar la cartera",
     tradeSuccess: "Operación ejecutada con éxito",
   },
+  payment: {
+    successTitle: "¡Pago exitoso!",
+    successSubtitle: "Tu cuenta ha sido actualizada. Todas las funciones premium están desbloqueadas.",
+    featureUnlocked1: "Señales ilimitadas en tiempo real en todos los tickers",
+    featureUnlocked2: "Puntuación de convicción y análisis con IA",
+    featureUnlocked3: "Alertas prioritarias y datos de dark pool",
+    goToSignals: "Ver todas las señales",
+    goToDashboard: "Ir al panel",
+    receiptNote: "Se ha enviado un recibo de confirmación a tu correo electrónico.",
+    cancelTitle: "Pago cancelado",
+    cancelSubtitle: "No se realizó ningún cargo a tu cuenta.",
+    cancelReassurance: "Tu acceso gratuito sigue activo. Puedes actualizar en cualquier momento.",
+    backToHome: "Volver al inicio",
+    browseFree: "Continuar con acceso gratuito",
+    cancelNote: "Si experimentaste un problema durante el pago, inténtalo de nuevo o contacta con soporte.",
+  },
   notFound: {
     title: "404 Página no encontrada",
     message: "La página que buscas no existe.",
@@ -1575,6 +1655,22 @@ const nl: TranslationKeys = {
     portfolioResetSuccess: "Portefeuille gereset naar €10.000",
     resetError: "Portefeuille kon niet worden gereset",
     tradeSuccess: "Trade succesvol uitgevoerd",
+  },
+  payment: {
+    successTitle: "Betaling geslaagd!",
+    successSubtitle: "Uw account is geüpgraded. Alle premium functies zijn ontgrendeld.",
+    featureUnlocked1: "Onbeperkte realtime signalen voor alle tickers",
+    featureUnlocked2: "AI-gestuurde overtuigingsscore en analyses",
+    featureUnlocked3: "Prioriteitsmeldingen en dark pool-gegevens",
+    goToSignals: "Alle signalen bekijken",
+    goToDashboard: "Naar het dashboard",
+    receiptNote: "Een bevestigingsbewijs is naar uw e-mailadres verzonden.",
+    cancelTitle: "Betaling geannuleerd",
+    cancelSubtitle: "Er zijn geen kosten in rekening gebracht.",
+    cancelReassurance: "Uw gratis toegang blijft actief. U kunt op elk moment upgraden.",
+    backToHome: "Terug naar home",
+    browseFree: "Doorgaan met gratis toegang",
+    cancelNote: "Als u een probleem had tijdens het afrekenen, probeer het opnieuw of neem contact op met support.",
   },
   notFound: {
     title: "404 Pagina niet gevonden",

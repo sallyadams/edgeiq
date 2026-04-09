@@ -14,6 +14,8 @@ import Signals from "@/pages/Signals";
 import Watchlist from "@/pages/Watchlist";
 import TickerDetail from "@/pages/TickerDetail";
 import Portfolio from "@/pages/Portfolio";
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import PaymentCancel from "@/pages/PaymentCancel";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -95,6 +97,12 @@ function Router() {
           </Layout>
         </ProtectedRoute>
       </Route>
+      <Route path="/payment/success">
+        <ProtectedRoute>
+          <PaymentSuccess />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/payment/cancel" component={PaymentCancel} />
       <Route component={NotFound} />
     </Switch>
   );
