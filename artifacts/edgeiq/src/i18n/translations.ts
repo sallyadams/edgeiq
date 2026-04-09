@@ -261,6 +261,10 @@ type TranslationKeys = {
     tradeFailed: string;
     disclaimer: string;
     trade: string;
+    exceedsMax: string;
+    maxQuantityHint: string;
+    useMax: string;
+    validPosition: string;
     positionClosed: string;
     closeError: string;
     portfolioResetSuccess: string;
@@ -518,6 +522,10 @@ const en: TranslationKeys = {
     tradeFailed: "Trade execution failed",
     disclaimer: "Paper trading only. No real money is involved. Prices are simulated.",
     trade: "Trade",
+    exceedsMax: "Your position exceeds the maximum allowed (€5,000). Adjust quantity to continue.",
+    maxQuantityHint: "Max quantity for this trade:",
+    useMax: "Use Max",
+    validPosition: "Valid position size",
     positionClosed: "position closed",
     closeError: "Failed to close position",
     portfolioResetSuccess: "Portfolio reset to €10,000",
@@ -775,6 +783,10 @@ const fr: TranslationKeys = {
     tradeFailed: "L'exécution du trade a échoué",
     disclaimer: "Trading papier uniquement. Aucun argent réel n'est impliqué. Les prix sont simulés.",
     trade: "Trader",
+    exceedsMax: "Votre position dépasse le maximum autorisé (5 000 €). Ajustez la quantité pour continuer.",
+    maxQuantityHint: "Quantité max pour ce trade :",
+    useMax: "Utiliser le max",
+    validPosition: "Taille de position valide",
     positionClosed: "position clôturée",
     closeError: "Échec de la clôture de la position",
     portfolioResetSuccess: "Portefeuille réinitialisé à 10 000 €",
@@ -1032,6 +1044,10 @@ const de: TranslationKeys = {
     tradeFailed: "Trade-Ausführung fehlgeschlagen",
     disclaimer: "Nur Paper Trading. Kein echtes Geld. Preise sind simuliert.",
     trade: "Handeln",
+    exceedsMax: "Ihre Position überschreitet das erlaubte Maximum (5.000 €). Passen Sie die Menge an.",
+    maxQuantityHint: "Maximale Menge für diesen Trade:",
+    useMax: "Max verwenden",
+    validPosition: "Gültige Positionsgröße",
     positionClosed: "Position geschlossen",
     closeError: "Position konnte nicht geschlossen werden",
     portfolioResetSuccess: "Portfolio auf 10.000 € zurückgesetzt",
@@ -1289,6 +1305,10 @@ const es: TranslationKeys = {
     tradeFailed: "Fallo en la ejecución",
     disclaimer: "Solo trading de papel. No se usa dinero real. Los precios son simulados.",
     trade: "Operar",
+    exceedsMax: "Tu posición excede el máximo permitido (5.000 €). Ajusta la cantidad para continuar.",
+    maxQuantityHint: "Cantidad máxima para esta operación:",
+    useMax: "Usar máximo",
+    validPosition: "Tamaño de posición válido",
     positionClosed: "posición cerrada",
     closeError: "Error al cerrar la posición",
     portfolioResetSuccess: "Cartera reiniciada a 10.000 €",
@@ -1546,6 +1566,10 @@ const nl: TranslationKeys = {
     tradeFailed: "Trade-uitvoering mislukt",
     disclaimer: "Alleen paper trading. Geen echt geld. Prijzen zijn gesimuleerd.",
     trade: "Handelen",
+    exceedsMax: "Uw positie overschrijdt het toegestane maximum (€ 5.000). Pas de hoeveelheid aan om door te gaan.",
+    maxQuantityHint: "Maximale hoeveelheid voor deze trade:",
+    useMax: "Max gebruiken",
+    validPosition: "Geldige positiegrootte",
     positionClosed: "positie gesloten",
     closeError: "Positie kon niet worden gesloten",
     portfolioResetSuccess: "Portefeuille gereset naar €10.000",

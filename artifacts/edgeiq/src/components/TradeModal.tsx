@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Loader2, Link2 } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Loader2, Link2, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useExecuteTrade, useGetMarketQuote } from "@workspace/api-client-react";
 import { useI18n } from "@/i18n";
 import { toast } from "@/hooks/use-toast";
 import { BrokerConnect } from "./BrokerConnect";
+
+const MAX_POSITION_SIZE = 5000;
 
 interface TradeModalProps {
   ticker: string;
@@ -29,10 +31,38 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
   const price = quote?.price ?? 0;
   const estimatedTotal = Math.round(qty * price * 100) / 100;
 
+  const maxQuantity = useMemo(() => {
+    if (price <= 0) return 0;
+    return Math.floor(MAX_POSITION_SIZE / price);
+  }, [price]);
+
+  const exceedsMax = qty > 0 && price > 0 && estimatedTotal > MAX_POSITION_SIZE;
+  const isValid = qty > 0 && price > 0 && !exceedsMax && Number.isInteger(qty);
+  const canSubmit = isValid && !executeTrade.isPending && !successMsg;
+
+  const usagePercent = qty > 0 && price > 0
+    ? Math.min((estimatedTotal / MAX_POSITION_SIZE) * 100, 100)
+    : 0;
+
+  const handleUseMax = () => {
+    if (maxQuantity > 0) {
+      setQuantity(String(maxQuantity));
+      setError(null);
+    }
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuantity(e.target.value);
+    setError(null);
+  };
+
   const handleSubmit = () => {
     setError(null);
     if (qty <= 0) {
       setError(t.trading.invalidQuantity);
+      return;
+    }
+    if (exceedsMax) {
       return;
     }
 
@@ -142,27 +172,97 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              {t.trading.quantity}
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {t.trading.quantity}
+              </label>
+              {price > 0 && (
+                <button
+                  onClick={handleUseMax}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 transition-all"
+                >
+                  <Zap className="w-3 h-3" />
+                  {t.trading.useMax} ({maxQuantity})
+                </button>
+              )}
+            </div>
             <input
               type="number"
               min="1"
+              max={maxQuantity}
+              step="1"
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={handleQuantityChange}
               placeholder="0"
-              className="w-full px-4 py-3 bg-secondary/30 border border-border/50 rounded-xl text-lg font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+              className={cn(
+                "w-full px-4 py-3 bg-secondary/30 border rounded-xl text-lg font-mono focus:outline-none focus:ring-2 transition-all",
+                exceedsMax
+                  ? "border-destructive/50 focus:ring-destructive/30 focus:border-destructive/50"
+                  : isValid
+                    ? "border-success/50 focus:ring-success/30 focus:border-success/50"
+                    : "border-border/50 focus:ring-primary/30 focus:border-primary/50",
+              )}
             />
+
+            {exceedsMax && (
+              <div className="mt-2 flex items-start gap-2 p-2.5 rounded-lg bg-destructive/5 border border-destructive/15">
+                <AlertTriangle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-xs text-destructive font-medium">{t.trading.exceedsMax}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-destructive/80">
+                      {t.trading.maxQuantityHint} <span className="font-bold font-mono">{maxQuantity} {t.trading.shares}</span>
+                    </p>
+                    <button
+                      onClick={handleUseMax}
+                      className="text-xs font-semibold text-destructive underline underline-offset-2 hover:text-destructive/80 transition-colors"
+                    >
+                      {t.trading.useMax}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isValid && (
+              <div className="mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-success/5 border border-success/15">
+                <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0" />
+                <p className="text-xs text-success font-medium">{t.trading.validPosition}</p>
+              </div>
+            )}
           </div>
 
-          <div className="p-4 bg-secondary/20 rounded-xl border border-border/40 space-y-2">
+          <div className="p-4 bg-secondary/20 rounded-xl border border-border/40 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t.trading.estimatedTotal}</span>
-              <span className="font-mono font-bold">€{estimatedTotal.toFixed(2)}</span>
+              <span className={cn(
+                "font-mono font-bold",
+                exceedsMax ? "text-destructive" : isValid ? "text-success" : "",
+              )}>
+                €{estimatedTotal.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">{t.trading.maxPosition}</span>
               <span className="font-mono text-muted-foreground">€5,000.00</span>
+            </div>
+            <div className="space-y-1">
+              <div className="w-full h-1.5 rounded-full bg-secondary/50 overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all duration-300",
+                    exceedsMax
+                      ? "bg-destructive"
+                      : usagePercent > 80
+                        ? "bg-amber-500"
+                        : "bg-success",
+                  )}
+                  style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground/70 text-right">
+                {usagePercent.toFixed(0)}%
+              </p>
             </div>
           </div>
         </div>
@@ -170,12 +270,14 @@ export function TradeModal({ ticker, defaultSide = "buy", onClose, onSuccess }: 
         <div className="p-5 border-t border-border/50">
           <Button
             onClick={handleSubmit}
-            disabled={executeTrade.isPending || qty <= 0 || !!successMsg}
+            disabled={!canSubmit}
             className={cn(
               "w-full py-3 font-semibold text-sm rounded-xl transition-all",
-              side === "buy"
-                ? "bg-success hover:bg-success/90 text-white"
-                : "bg-destructive hover:bg-destructive/90 text-white",
+              !canSubmit
+                ? "opacity-50 cursor-not-allowed"
+                : side === "buy"
+                  ? "bg-success hover:bg-success/90 text-white"
+                  : "bg-destructive hover:bg-destructive/90 text-white",
             )}
           >
             {executeTrade.isPending ? (
