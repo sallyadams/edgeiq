@@ -143,6 +143,7 @@ router.post(
 
         case "customer.subscription.deleted": {
           const subscription = event.data.object;
+          const subscriptionId = subscription.id;
           const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id ?? null;
 
           if (customerId) {
@@ -152,12 +153,14 @@ router.post(
               .where(eq(usersTable.stripeCustomerId, customerId))
               .limit(1);
 
-            if (user) {
-              console.log(`[stripe-webhook] Subscription cancelled for user ${user.id} — downgrading to free`);
+            if (user && user.stripeSubscriptionId === subscriptionId) {
+              console.log(`[stripe-webhook] Subscription ${subscriptionId} cancelled for user ${user.id} — downgrading to free`);
               await db
                 .update(usersTable)
                 .set({ tier: "free", stripeSubscriptionId: null, updatedAt: new Date() })
                 .where(eq(usersTable.id, user.id));
+            } else if (user) {
+              console.log(`[stripe-webhook] Subscription ${subscriptionId} cancelled but user ${user.id} has different active subscription ${user.stripeSubscriptionId} — skipping downgrade`);
             }
           }
           break;
@@ -168,6 +171,8 @@ router.post(
       }
     } catch (err) {
       console.error(`[stripe-webhook] Error handling ${event.type}:`, err);
+      res.status(500).json({ error: "Webhook processing failed" });
+      return;
     }
 
     res.json({ received: true });
