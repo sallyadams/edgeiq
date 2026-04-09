@@ -13,7 +13,7 @@ const router: IRouter = Router();
 const MAX_POSITION_SIZE = 5000;
 const DEFAULT_BALANCE = 10000;
 
-async function getOrCreatePortfolio(userId: string, tx = db) {
+async function getOrCreatePortfolio(userId: string, tx: Pick<typeof db, "select" | "insert" | "update" | "delete"> = db) {
   const existing = await tx
     .select()
     .from(portfoliosTable)
