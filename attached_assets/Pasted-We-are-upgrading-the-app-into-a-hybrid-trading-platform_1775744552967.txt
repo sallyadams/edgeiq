@@ -1,0 +1,437 @@
+We are upgrading the app into a hybrid trading platform with 3 core layers:
+
+1. Signal Intelligence
+2. Trade Execution / Trade Monitoring
+3. Chatbot Intelligence Assistant
+
+Please implement the following changes clearly and professionally.
+
+--------------------------------------------------
+1. CORE PRODUCT DIRECTION
+--------------------------------------------------
+
+The app should no longer be only a signal dashboard.
+
+It must become a hybrid platform where users can:
+
+- view live AI-powered trading signals
+- understand the logic behind signals
+- monitor trade movement and performance
+- optionally execute trades through an external broker connection
+- get guided support from an in-app chatbot assistant
+
+Important:
+We are NOT building our own brokerage.
+We are NOT storing user funds internally.
+Trade execution must happen through connected external broker APIs only.
+
+--------------------------------------------------
+2. LANDING PAGE / CONVERSION IMPROVEMENTS
+--------------------------------------------------
+
+Please update the landing page for stronger conversion.
+
+Main goals:
+- clearer value proposition
+- stronger trust
+- better CTA
+- better onboarding for first-time users
+
+Hero section should communicate:
+- stop guessing, trade with smart money
+- track institutional flows
+- detect insider activity
+- receive AI-powered signals in real time
+
+Primary CTA:
+“Start Free — See Your First Winning Signal Now”
+
+Subtext:
+“No credit card required • Get 3 live signals instantly”
+
+Add trust section:
+- Built by Salamat Adams, Data Analyst & AI Specialist
+- short founder credibility statement
+- show platform stats in a realistic way
+- add space for testimonials / beta feedback
+
+Add “Who this is for” section:
+- beginner traders
+- busy professionals
+- users who want data, not guesswork
+
+Add urgency section:
+- limited early access
+- encourage immediate signup
+
+Pricing should remain 3 tiers:
+- Free
+- Pro
+- Elite
+
+Please make the pricing cards more conversion-focused and professional.
+
+--------------------------------------------------
+3. SIGNAL INTELLIGENCE SYSTEM
+--------------------------------------------------
+
+Keep and improve the signal engine.
+
+Users should be able to see:
+- signal type: buy / sell
+- asset name / ticker
+- entry zone
+- current market price
+- AI confidence / conviction score
+- institutional flow data
+- insider activity data where available
+- timeframe
+- risk level
+- signal status: active / closed / expired
+
+For each signal, create a detailed signal card or signal detail view with:
+- explanation of why the signal was generated
+- key supporting data
+- visual confidence indicator
+- expected scenario / trade thesis
+- risk warning
+- CTA buttons:
+  - “Track Trade”
+  - “Trade Now”
+  - “Ask Assistant”
+
+Important:
+The signal should feel understandable, not just technical.
+
+--------------------------------------------------
+4. TRADE VISUALIZATION / TRADE MONITORING
+--------------------------------------------------
+
+Add a full trade visualization system.
+
+When a signal is issued, users should be able to see how the trade evolves over time.
+
+Please add:
+- entry price
+- live/current price
+- unrealized profit/loss
+- percentage move since signal
+- chart showing price movement after signal trigger
+- trade status timeline
+- gain/loss badge
+- elapsed time since signal activation
+
+Example:
+Signal: BUY Tesla at 210
+Current price: 218
+Move: +3.8 percent
+
+This feature should allow users to:
+- visually understand whether a signal is working
+- build trust in the platform
+- learn from signal outcomes
+
+Also add a portfolio-style tracking area where users can:
+- save signals they are following
+- monitor active trades
+- review closed trades
+- see total performance summary
+
+--------------------------------------------------
+5. TRADE EXECUTION SYSTEM
+--------------------------------------------------
+
+We want users to be able to trade through the app, but only through external broker API integrations.
+
+Please implement architecture for broker-connected execution.
+
+Required flow:
+- user sees a signal
+- user clicks “Trade Now”
+- app checks if broker is connected
+- if not connected, prompt user to connect broker
+- if connected, user can review trade parameters
+- user confirms position size and order details
+- order is sent through broker API
+- user sees execution confirmation and open position tracking
+
+Important:
+Do NOT build internal brokerage logic.
+Do NOT store user money.
+Do NOT simulate real brokerage unless it is clearly marked as demo mode.
+
+Add support for:
+- broker connection screen
+- trade preview modal
+- position size entry
+- basic order confirmation
+- execution status feedback
+
+If full broker execution is not yet ready, then create this in phases:
+
+Phase 1:
+- “Trade Now” opens broker connection setup / placeholder flow
+
+Phase 2:
+- connect real broker API
+
+Preferred direction:
+- allow future integration with Alpaca or Interactive Brokers
+- keep the architecture modular so broker adapters can be added later
+
+--------------------------------------------------
+6. PAPER TRADING / DEMO MODE
+--------------------------------------------------
+
+Please add a demo or paper trading mode.
+
+This is important for:
+- beginners
+- onboarding
+- building trust before live execution
+
+Users should be able to:
+- activate paper trading mode
+- place simulated trades from signals
+- monitor paper portfolio performance
+- compare signal outcomes without risking real money
+
+Please clearly label:
+- Live Trading
+- Paper Trading
+
+No ambiguity.
+
+--------------------------------------------------
+7. USER ONBOARDING EXPERIENCE
+--------------------------------------------------
+
+Please improve the first user experience after signup.
+
+On first login, show a simple onboarding flow:
+Step 1: Welcome
+Step 2: How signals work
+Step 3: How to track trades
+Step 4: How to connect a broker
+Step 5: How to use paper trading
+Step 6: Upgrade benefits
+
+Make onboarding short, polished, and easy to understand.
+
+Also add a quick-start guide area:
+“How to use this platform in 30 seconds”
+
+Suggested steps:
+1. Review signals
+2. Check AI confidence
+3. Read signal explanation
+4. Track or execute trade
+5. Ask the assistant if needed
+
+--------------------------------------------------
+8. CHATBOT INTELLIGENCE ASSISTANT
+--------------------------------------------------
+
+Add an in-app intelligent chatbot assistant.
+
+This is a major feature.
+
+The chatbot should help users:
+- understand signals
+- understand the platform
+- know what to do next
+- reduce confusion
+- improve upgrades and retention
+
+UI requirements:
+- floating chat widget bottom-right
+- premium design matching dark app theme
+- auto-trigger on first login
+- expandable / closable
+
+Initial welcome message:
+“Hi, I’m your AI trading assistant. I can help you understand signals, track trades, and use the platform in seconds.”
+
+Quick actions:
+- Quick Tour
+- Explain This Signal
+- How to Trade
+- Paper Trading Help
+- Upgrade to Pro
+
+--------------------------------------------------
+9. CHATBOT BEHAVIOR / INTELLIGENCE FLOWS
+--------------------------------------------------
+
+Please build chatbot logic with context awareness.
+
+A. Onboarding mode
+If first-time user:
+- explain dashboard
+- explain signal cards
+- explain trade tracking
+- explain broker connection
+- explain paper trading
+
+B. Signal explanation mode
+If user opens a signal:
+- explain what BUY or SELL means
+- explain AI confidence score
+- explain risk level
+- explain possible scenario
+- explain what “Track Trade” and “Trade Now” do
+
+C. Trading guidance mode
+If user wants to trade:
+- explain next step
+- guide user to connect broker or use paper trading
+- explain trade preview and confirmation
+
+D. Pricing / upsell mode
+If free user reaches premium feature:
+- explain what Pro unlocks
+- explain what Elite unlocks
+- encourage upgrade naturally
+
+E. Context-specific help
+If user is on pricing page:
+- chatbot helps compare plans
+If user is on signal page:
+- chatbot explains signal
+If user is on broker page:
+- chatbot explains connection steps
+If user is in paper trading mode:
+- chatbot explains simulated trading
+
+--------------------------------------------------
+10. AI CHATBOT TECHNICAL DIRECTION
+--------------------------------------------------
+
+Please structure the chatbot in two layers:
+
+Layer 1:
+Predefined product guidance flows for key actions
+
+Layer 2:
+Optional OpenAI-powered dynamic responses for user questions
+
+Examples of user questions:
+- What does this signal mean?
+- Is this high risk?
+- How do I trade from here?
+- What is paper trading?
+- What do I get with Pro?
+- Why was this signal generated?
+
+Important:
+The chatbot should guide and educate.
+It should not provide reckless financial promises.
+Use careful wording and include risk-aware language.
+
+--------------------------------------------------
+11. TRUST / COMPLIANCE / RISK LANGUAGE
+--------------------------------------------------
+
+Please improve trust and compliance language throughout the app.
+
+We need clear messaging that:
+- the platform provides data, signals, and execution tools
+- market risk exists
+- users remain responsible for decisions
+- broker execution depends on broker connection
+
+Add a discreet disclaimer where necessary:
+- educational / informational signals
+- not guaranteed outcomes
+- live markets carry risk
+
+But do not make the page look scary or overloaded.
+
+--------------------------------------------------
+12. USER ACCOUNT / PLAN LOGIC
+--------------------------------------------------
+
+Ensure feature access matches subscription tier.
+
+Free:
+- limited signals
+- limited chatbot usage
+- paper trading basic
+- no advanced execution tools
+
+Pro:
+- unlimited signals
+- advanced AI scoring
+- real-time alerts
+- trade monitoring
+- fuller chatbot help
+
+Elite:
+- everything in Pro
+- premium insights
+- priority data features
+- advanced tracking
+- best support level
+
+Please make upgrade paths smooth and visible without being aggressive.
+
+--------------------------------------------------
+13. PRODUCT UX GOAL
+--------------------------------------------------
+
+The final product should feel like this:
+
+A user can:
+- sign up quickly
+- understand the product immediately
+- see live signals clearly
+- understand why each signal exists
+- monitor trade movement
+- use paper trading safely
+- connect a broker for real trading
+- get support instantly from the chatbot
+- upgrade naturally when they see value
+
+The app should feel premium, intelligent, clear, and trustworthy.
+
+--------------------------------------------------
+14. DEVELOPMENT PRIORITY ORDER
+--------------------------------------------------
+
+Please execute in this order if needed:
+
+Priority 1:
+- landing page rewrite
+- onboarding improvements
+- trust and CTA upgrades
+
+Priority 2:
+- improved signal detail cards
+- trade monitoring / visualization
+- paper trading mode
+
+Priority 3:
+- chatbot widget + structured guidance flows
+
+Priority 4:
+- broker connection framework
+- trade execution flow via external broker API
+
+Priority 5:
+- optional OpenAI dynamic chatbot responses
+
+--------------------------------------------------
+15. FINAL DELIVERABLE EXPECTATION
+--------------------------------------------------
+
+I want a product where users can do both:
+
+Option A:
+Use the platform only for AI signals and market intelligence
+
+Option B:
+Use the platform for signals + trade tracking + broker-connected execution
+
+And in both cases, the chatbot should help them understand and use the system smoothly.
+
+Please implement this professionally with a clean, modern, premium UI and strong product clarity.
